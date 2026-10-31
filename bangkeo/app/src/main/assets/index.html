@@ -5,58 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bảng Kèo</title>
 <style>
+/* Viết CSS kiểu cũ để WebView đời cũ (máy chiếu) vẫn hiển thị đúng: không dùng clamp, inset, flex gap */
 :root{
   --bg:#0d1612; --panel:#15231c; --row:#18291f; --line:#2a4236;
   --fg:#f1f5f2; --muted:#a9bdb2; --accent:#7fd99a; --focus:#ffd23f; --up:#7fd99a; --down:#ff7a6b;
-  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--fg);font-family:"Roboto","Segoe UI",Arial,sans-serif;font-size:clamp(16px,1.9vw,28px);overflow:hidden}
-.app{display:flex;flex-direction:column;height:100%;padding:18px 28px;gap:14px}
-header{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+body{background:#0d1612;background:var(--bg);color:#f1f5f2;color:var(--fg);font-family:Roboto,"Segoe UI",Arial,sans-serif;font-size:24px;overflow:hidden}
+@media (max-width:1100px){body{font-size:20px}}
+@media (max-width:700px){body{font-size:16px}}
+.app{display:flex;flex-direction:column;height:100%;padding:18px 28px}
+.app > *{margin-bottom:12px}
+.app > *:last-child{margin-bottom:0}
+header{display:flex;align-items:center;flex-wrap:wrap}
+header > *{margin-right:18px}
+header > *:last-child{margin-right:0}
 h1{margin:0;font-size:1.5em;font-weight:900;white-space:nowrap}
 h1 span{color:var(--accent)}
 .status{color:var(--muted);font-size:.75em;flex:1;min-width:0}
-.clock{font-size:1.6em;font-weight:700;font-variant-numeric:tabular-nums}
-.tabs{display:flex;gap:10px;flex-wrap:wrap}
+.clock{font-size:1.6em;font-weight:700}
+.tabs{display:flex;flex-wrap:wrap}
+.tabs button{margin:0 10px 8px 0}
 button{font:inherit;font-size:.85em;font-weight:700;padding:10px 18px;border-radius:10px;border:3px solid var(--line);background:var(--panel);color:var(--fg);outline:none}
 button.on{background:var(--accent);color:#0d1612;border-color:var(--accent)}
-button:focus,.row:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px rgba(255,210,63,.3)}
+button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px rgba(255,210,63,.3)}
 .tablewrap{flex:1;overflow-y:auto;border:2px solid var(--line);border-radius:12px;min-height:0}
-.head,.row{display:grid;grid-template-columns:5.2em minmax(0,1fr) 4.4em 4.4em 4.4em 5em 5em;align-items:center;gap:8px;padding:10px 16px}
-.head{position:sticky;top:0;background:var(--panel);color:var(--muted);font-size:.72em;text-transform:uppercase;letter-spacing:.06em;z-index:2;border-bottom:2px solid var(--line)}
+.head,.row{display:grid;grid-template-columns:5.6em minmax(0,1fr) 4.4em 4.4em 4.4em 4.8em 4.8em;align-items:center;grid-column-gap:8px;padding:10px 16px}
+.head{position:-webkit-sticky;position:sticky;top:0;background:var(--panel);color:var(--muted);font-size:.72em;text-transform:uppercase;letter-spacing:.06em;z-index:2;border-bottom:2px solid var(--line)}
 .head div:nth-child(n+3),.row .o{text-align:center}
 .row{border:3px solid transparent;border-bottom:1px solid var(--line);outline:none}
-.row:nth-child(odd){background:var(--row)}
-.time{font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
-.time small{display:block;color:var(--muted);font-weight:400;font-size:.7em}
+.time{font-weight:700;line-height:1.15}
+.time small{display:block;color:var(--muted);font-weight:400;font-size:.68em;white-space:nowrap}
 .time.live{color:var(--down)}
+.time.live small{color:var(--down)}
 .teams{min-width:0;line-height:1.25}
 .teams div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.teams div:first-child{font-weight:700}
-.o{font-size:1.15em;font-weight:800;font-variant-numeric:tabular-nums}
+.teams div.win{font-weight:800}
+.o{font-size:1.15em;font-weight:800}
 .o.fav{color:var(--focus)}
 .o .a{font-size:.6em;margin-left:2px}
 .o .a.up{color:var(--up)} .o .a.down{color:var(--down)}
 .o.na{color:var(--line)}
-.teams .tour{font-weight:400;color:var(--muted);font-size:.65em}
-.lineinfo{grid-column:2/-1;color:var(--muted);font-size:.65em;margin-top:-6px}
-.time small{white-space:nowrap}
+.lineinfo{grid-column:2 / 8;color:var(--muted);font-size:.65em}
 .day{padding:8px 16px;background:var(--bg);color:var(--accent);font-weight:700;font-size:.8em;border-bottom:1px solid var(--line)}
-.empty{padding:40px;text-align:center;color:var(--muted)}
-.legend{color:var(--muted);font-size:.68em;display:flex;gap:24px;flex-wrap:wrap}
+.empty{padding:40px;text-align:center;color:var(--muted);border:3px solid transparent;outline:none;line-height:1.6}
+.legend{color:var(--muted);font-size:.66em}
+.legend span{display:inline-block;margin-right:24px}
 .legend b{color:var(--fg)}
-.demo{background:var(--focus);color:#0d1612;padding:3px 10px;border-radius:6px;font-weight:800;font-size:.8em}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:9}
-.box{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:28px;width:min(900px,92vw);display:flex;flex-direction:column;gap:14px}
-.box h2{margin:0}
-.box p{margin:0;color:var(--muted);font-size:.8em;line-height:1.5}
-.box input{font:inherit;font-size:1em;padding:12px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--fg);outline:none}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9}
+.box{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:28px;width:90%;max-width:900px}
+.box > *{margin:0 0 14px}
+.box > *:last-child{margin-bottom:0}
+.box p{color:var(--muted);font-size:.8em;line-height:1.5}
+.box input{display:block;width:100%;font:inherit;padding:12px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--fg);outline:none}
 .box input:focus{border-color:var(--focus)}
-.box .btns{display:flex;gap:12px}
+.box button{margin-right:12px}
+.small{font-size:.65em!important;word-break:break-all}
 [hidden]{display:none!important}
-@media (max-width:700px){.head,.row{grid-template-columns:4.2em minmax(0,1fr) 3.4em 3.4em 3.4em}.head div:nth-child(n+6),.row .t{display:none}}
+@media (max-width:700px){.head,.row{grid-template-columns:4.4em minmax(0,1fr) 3.4em 3.4em 3.4em}.head div:nth-child(n+6),.row .t{display:none}}
 </style>
 </head>
 <body>
@@ -75,8 +82,8 @@ button:focus,.row:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px
   </div>
   <div class="legend">
     <span><b>1</b> chủ nhà thắng · <b>X</b> hoà · <b>2</b> khách thắng</span>
-    <span>Số <b style="color:var(--focus)">vàng</b> là cửa được đánh giá mạnh hơn</span>
-    <span><b style="color:var(--up)">▲</b><b style="color:var(--down)">▼</b> tăng/giảm so với lúc mở kèo</span>
+    <span>Số <b style="color:#ffd23f">vàng</b> là đội được đánh giá mạnh hơn</span>
+    <span><b style="color:#7fd99a">▲</b><b style="color:#ff7a6b">▼</b> tăng/giảm so với lúc mở kèo</span>
     <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là chưa có tỷ lệ</span>
   </div>
 </div>
@@ -84,329 +91,1307 @@ button:focus,.row:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px
 <div class="modal" id="modal" hidden>
   <div class="box">
     <h2>Cài đặt</h2>
-    <p>Nguồn dữ liệu chính (nếu nguồn này lỗi, app tự thử nguồn còn lại):</p>
-    <div class="btns"><button id="srcSofa">SofaScore</button><button id="srcEspn">ESPN</button></div>
-    <p>Không bắt buộc: nếu có mã của the-odds-api.com thì app lấy tỷ lệ từ đó cho các giải châu Âu. Vào trang đó, bấm <b>Get API Key</b>, chọn gói miễn phí (500 lượt/tháng), mã sẽ gửi về email. Nhập mã đó vào ô dưới.</p>
-    <input id="key" placeholder="Dán mã API vào đây" autocomplete="off" spellcheck="false">
-    <div class="btns"><button id="saveKey">Lưu</button><button id="closeModal">Đóng</button></div>
-    <p>Mỗi lần bấm Cập nhật tốn 2 lượt. Số lượt còn lại hiện ở dòng trên cùng.</p>
+    <p>Bình thường app lấy tỷ lệ miễn phí từ ESPN, tự cập nhật 5 phút một lần, không cần làm gì.</p>
+    <p>Không bắt buộc: nếu có mã của the-odds-api.com, nhập vào đây để lấy tỷ lệ trung bình nhiều nhà cái. Để trống là dùng ESPN.</p>
+    <input id="key" placeholder="Mã the-odds-api.com (có thể để trống)" autocomplete="off" spellcheck="false">
+    <div><button id="saveKey">Lưu</button><button id="closeModal">Đóng</button></div>
+    <p class="small" id="ua"></p>
   </div>
 </div>
 
-<script>
-// [mã The Odds API, mã ESPN, mã giải SofaScore, tên]
-const LEAGUES = [
-  ["soccer_epl","eng.1",17,"Ngoại hạng Anh"],
-  ["soccer_spain_la_liga","esp.1",8,"La Liga"],
-  ["soccer_italy_serie_a","ita.1",23,"Serie A"],
-  ["soccer_germany_bundesliga","ger.1",35,"Bundesliga"],
-  ["soccer_france_ligue_one","fra.1",34,"Ligue 1"],
-  ["soccer_uefa_champs_league","uefa.champions",7,"Cúp C1"],
-  ["soccer_uefa_europa_league","uefa.europa",679,"Cúp C2"],
-  ["vietnam",null,"VN","Việt Nam"],
-];
-const BAKED_KEY = ""; // có thể điền sẵn mã API khi build
-const ls = {
-  get(k,d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } },
-  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
-};
-let league = ls.get("league", LEAGUES[0][0]);
-if(!LEAGUES.some(l=>l[0]===league)) league = LEAGUES[0][0];
-let source = ls.get("source", "sofa");
-let apiKey = ls.get("key", BAKED_KEY);
-let remaining = ls.get("remaining", "");
-const $ = id => document.getElementById(id);
+<script>/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
-/* ---------- bridge to Android ---------- */
-const cbs = {}; let cbn = 0;
-window.__cb = (id, json) => { const f = cbs[id]; delete cbs[id]; if(f) f(JSON.parse(json)); };
-function httpGet(url){
-  return new Promise(res => {
-    if(window.Android){ const id = "c"+(++cbn); cbs[id] = res; Android.get(url, id); }
-    else fetch(url).then(async r => res({status:r.status, body:await r.text(), remaining:r.headers.get("x-requests-remaining")||""}))
-                   .catch(e => res({status:0, body:String(e)}));
-  });
-}
+var runtime = (function (exports) {
+  "use strict";
 
-/* ---------- data ---------- */
-function avg(a){ return a.length ? a.reduce((s,x)=>s+x,0)/a.length : null; }
-function summarize(ev){
-  const h = [], d = [], a = [], ov = [], un = [];
-  for(const b of ev.bookmakers||[]) for(const m of b.markets||[]){
-    if(m.key==="h2h") for(const o of m.outcomes){
-      if(o.name===ev.home_team) h.push(o.price); else if(o.name===ev.away_team) a.push(o.price); else d.push(o.price);
-    }
-    if(m.key==="totals") for(const o of m.outcomes){
-      if(o.point!==2.5) continue;
-      (o.name==="Over"?ov:un).push(o.price);
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; };
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) });
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
     }
   }
-  return {id:ev.id, t:ev.commence_time, home:ev.home_team, away:ev.away_team, n:(ev.bookmakers||[]).length,
-          o:[avg(h),avg(d),avg(a),avg(ov),avg(un)]};
-}
 
-function sample(){
-  const base = Date.now(), H = 3600e3;
-  const m = [["Arsenal","Chelsea",1.85,3.6,4.2,1.72,2.1],["Liverpool","Man City",2.45,3.5,2.7,1.55,2.45],
-             ["Tottenham","Newcastle",2.3,3.4,3.0,1.68,2.2],["Brighton","Aston Villa",2.6,3.4,2.65,1.8,2.0],
-             ["Everton","West Ham",2.55,3.2,2.85,2.05,1.78],["Fulham","Brentford",2.2,3.45,3.25,1.9,1.9]];
-  return m.map((x,i)=>({id:"s"+i,t:new Date(base+(i<2?-0.5*H:(i+1)*20*H)).toISOString(),home:x[0],away:x[1],n:12,o:x.slice(2)}));
-}
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
 
-/* ESPN: free, no key. American odds -> decimal */
-function am2dec(v){
-  if(v==null || v==="" || v==="EVEN") return v==="EVEN" ? 2 : null;
-  const n = parseFloat(String(v).replace("+",""));
-  if(!isFinite(n) || n===0) return null;
-  return n > 0 ? 1 + n/100 : 1 + 100/Math.abs(n);
-}
-function pick(...vals){ for(const v of vals){ if(v!=null && v!=="") return v; } return null; }
-function espnEvent(ev){
-  const c = (ev.competitions||[])[0] || {};
-  const home = (c.competitors||[]).find(x=>x.homeAway==="home") || {};
-  const away = (c.competitors||[]).find(x=>x.homeAway==="away") || {};
-  const od = (c.odds||[])[0] || {};
-  const ml = od.moneyline || {}, tot = od.total || {};
-  const cl = o => o ? pick(o.close && o.close.odds, o.open && o.open.odds, o.odds) : null;
-  const ou = pick(od.overUnder, tot.over && tot.over.close && parseFloat(String(tot.over.close.line||"").replace(/[ou]/i,"")));
-  const st = (ev.status && ev.status.type) || {};
-  const o = [
-    am2dec(pick(od.homeTeamOdds && od.homeTeamOdds.moneyLine, cl(ml.home))),
-    am2dec(pick(od.drawOdds && od.drawOdds.moneyLine, cl(ml.draw))),
-    am2dec(pick(od.awayTeamOdds && od.awayTeamOdds.moneyLine, cl(ml.away))),
-    am2dec(pick(od.overOdds, cl(tot.over))),
-    am2dec(pick(od.underOdds, cl(tot.under))),
-  ];
-  return {id:ev.id, t:ev.date, home:(home.team||{}).displayName||"?", away:(away.team||{}).displayName||"?",
-          n:0, o, line:ou, state:st.state, detail:st.shortDetail||"",
-          score: st.state!=="pre" ? (home.score||"0")+" - "+(away.score||"0") : ""};
-}
-function ymd(d){ return d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0"); }
-function isoDay(d){ return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0"); }
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
 
-/* ---------- SofaScore (xem được ở VN, không cần mã) ---------- */
-const SOFA = "https://api.sofascore.com/api/v1";
-function frac2dec(c){
-  if(!c) return null;
-  if(c.decimalValue!=null){ const v = parseFloat(c.decimalValue); if(isFinite(v)) return v; }
-  const f = String(c.fractionalValue||c.initialFractionalValue||"");
-  const m = f.match(/^(\d+)\/(\d+)$/);
-  return m ? 1 + (+m[1])/(+m[2]) : null;
-}
-function frac2decInit(c){ return c && c.initialFractionalValue ? frac2dec({fractionalValue:c.initialFractionalValue}) : null; }
-const VI_STATUS = {"1st half":"Hiệp 1","2nd half":"Hiệp 2","Halftime":"Nghỉ giữa giờ","Extra time":"Hiệp phụ","Penalties":"Luân lưu","Postponed":"Hoãn","Canceled":"Huỷ","Ended":"Hết","AET":"Hết hiệp phụ","AP":"Hết luân lưu"};
-let sofaDay = null, sofaDayAt = 0, ouCache = {};
-async function sofaLoadDays(){
-  if(sofaDay && Date.now()-sofaDayAt < 90e3) return {ok:true};
-  const days = [-1,0,1].map(k => isoDay(new Date(Date.now()+k*86400e3)));
-  const reqs = [];
-  for(const d of days){ reqs.push(httpGet(SOFA+"/sport/football/scheduled-events/"+d)); reqs.push(httpGet(SOFA+"/sport/football/odds/1/"+d)); }
-  const res = await Promise.all(reqs);
-  const events = {}, odds = {}; let okCount = 0, lastErr = 0;
-  res.forEach((r,i) => {
-    if(r.status!==200){ lastErr = r.status; return; }
-    let j; try{ j = JSON.parse(r.body); }catch(e){ return; }
-    okCount++;
-    if(i%2===0) (j.events||[]).forEach(e => events[e.id] = e);
-    else Object.assign(odds, j.odds||{});
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
   });
-  if(!okCount) return {ok:false, status:lastErr};
-  sofaDay = {events, odds}; sofaDayAt = Date.now();
-  return {ok:true};
-}
-function sofaMatch(e, L){
-  const ut = (e.tournament||{}).uniqueTournament||{}, cat = (e.tournament||{}).category||{};
-  if(L[2]==="VN") return /vietnam/i.test(cat.name||"") || cat.alpha2==="VN";
-  return ut.id===L[2];
-}
-function sofaRow(e){
-  const st = e.status||{};
-  const state = st.type==="inprogress" ? "in" : st.type==="finished" ? "post" : st.type==="notstarted" ? "pre" : "other";
-  const od = sofaDay.odds[e.id] || {};
-  const ch = od.choices||[];
-  const g = n => ch.find(c=>c.name===n);
-  const ou = ouCache[e.id] || [null,null,null];
-  return {id:"s"+e.id, eid:e.id, t:new Date(e.startTimestamp*1000).toISOString(),
-    home:(e.homeTeam||{}).shortName||(e.homeTeam||{}).name||"?", away:(e.awayTeam||{}).shortName||(e.awayTeam||{}).name||"?",
-    tour:(e.tournament||{}).name||"", n:0,
-    o:[frac2dec(g("1")), frac2dec(g("X")), frac2dec(g("2")), ou[0], ou[1]],
-    open:[frac2decInit(g("1")), frac2decInit(g("X")), frac2decInit(g("2"))],
-    line: ou[2], state, detail: VI_STATUS[st.description]||st.description||"",
-    score: state!=="pre" && e.homeScore && e.homeScore.current!=null ? e.homeScore.current+" - "+(e.awayScore||{}).current : ""};
-}
-async function sofaOU(rows){
-  const need = rows.filter(r => r.state!=="post" && !ouCache[r.eid]).slice(0, 24);
-  let k = 0;
-  async function worker(){
-    while(k < need.length){
-      const r = need[k++];
-      const x = await httpGet(SOFA+"/event/"+r.eid+"/odds/1/all");
-      if(x.status!==200) continue;
-      try{
-        const ms = JSON.parse(x.body).markets||[];
-        let m = ms.find(m => /goals|total/i.test(m.marketName||"") && String(m.choiceGroup)==="2.5")
-             || ms.find(m => /goals|total/i.test(m.marketName||""));
-        if(m){
-          const ov = (m.choices||[]).find(c=>/over/i.test(c.name)), un = (m.choices||[]).find(c=>/under/i.test(c.name));
-          ouCache[r.eid] = [frac2dec(ov), frac2dec(un), parseFloat(m.choiceGroup)||2.5];
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: true });
+  defineProperty(
+    GeneratorFunctionPrototype,
+    "constructor",
+    { value: GeneratorFunction, configurable: true }
+  );
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      define(prototype, method, function(arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
         }
-      }catch(e){}
-    }
-  }
-  await Promise.all([worker(),worker(),worker(),worker()]);
-}
-async function loadSofa(L){
-  const d = await sofaLoadDays();
-  if(!d.ok) return {err:"SofaScore lỗi "+d.status};
-  const from = Date.now()-4*3600e3, to = Date.now()+36*3600e3;
-  const evs = Object.values(sofaDay.events).filter(e => sofaMatch(e,L) && e.startTimestamp*1000>=from && e.startTimestamp*1000<=to);
-  return {list: evs.map(sofaRow), evs};
-}
-async function loadEspn(L){
-  if(!L[1]) return {err:"ESPN không có giải này"};
-  const a = new Date(Date.now()-86400e3), b = new Date(Date.now()+7*86400e3);
-  const r = await httpGet("https://site.api.espn.com/apis/site/v2/sports/soccer/"+L[1]+"/scoreboard?limit=100&dates="+ymd(a)+"-"+ymd(b));
-  if(r.status!==200) return {err:"ESPN lỗi "+r.status};
-  try{ return {list:(JSON.parse(r.body).events||[]).map(espnEvent)}; }catch(e){ return {err:"ESPN trả dữ liệu lạ"}; }
-}
 
-let busy = false;
-async function refresh(){
-  if(busy) return; busy = true;
-  try{
-  const L = LEAGUES.find(l=>l[0]===league);
-  const name = L[3];
-  $("status").textContent = "Đang tải " + name + "…";
-  let list = null, errs = [], used = "";
-  if(apiKey && L[0]!=="vietnam"){
-    const r = await httpGet("https://api.the-odds-api.com/v4/sports/"+league+"/odds/?regions=eu&markets=h2h,totals&oddsFormat=decimal&apiKey="+encodeURIComponent(apiKey));
-    if(r.status===200){ try{ list = JSON.parse(r.body).map(summarize); used="The Odds API"; if(r.remaining){ remaining=r.remaining; ls.set("remaining",remaining);} }catch(e){} }
-    else errs.push("The Odds API lỗi "+r.status);
-  }
-  const order = source==="espn" ? [loadEspn, loadSofa] : [loadSofa, loadEspn];
-  let sofaRes = null;
-  for(const fn of order){
-    if(list) break;
-    const x = await fn(L);
-    if(x.list){ list = x.list; used = fn===loadSofa ? "SofaScore" : "ESPN"; if(fn===loadSofa) sofaRes = x; }
-    else errs.push(x.err);
-  }
-  if(list){
-    const prev = ls.get("prev_"+league, {});
-    render(list, prev);
-    const stamp = () => name + " · " + used + " · cập nhật " + new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
-    $("status").textContent = stamp() + (sofaRes && list.length ? " · đang lấy Tài/Xỉu…" : "");
-    if(sofaRes && list.length){
-      await sofaOU(list);
-      list = sofaRes.evs.map(sofaRow);
-      render(list, prev);
-      $("status").textContent = stamp();
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
     }
-    const snap = {}; list.forEach(x => snap[x.id] = x.o); ls.set("prev_"+league, snap);
-    ls.set("cache_"+league, list);
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    defineProperty(this, "_invoke", { value: enqueue });
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per GeneratorResume behavior specified since ES2015:
+        // ES2015 spec, step 3: https://262.ecma-international.org/6.0/#sec-generatorresume
+        // Latest spec, step 2: https://tc39.es/ecma262/#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var methodName = context.method;
+    var method = delegate.iterator[methodName];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method, or a missing .next method, always terminate the
+      // yield* loop.
+      context.delegate = null;
+
+      // Note: ["return"] must be used for ES3 parsing compatibility.
+      if (methodName === "throw" && delegate.iterator["return"]) {
+        // If the delegate iterator has a return method, give it a
+        // chance to clean up.
+        context.method = "return";
+        context.arg = undefined;
+        maybeInvokeDelegate(delegate, context);
+
+        if (context.method === "throw") {
+          // If maybeInvokeDelegate(context) changed context.method from
+          // "return" to "throw", let that override the TypeError below.
+          return ContinueSentinel;
+        }
+      }
+      if (methodName !== "return") {
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a '" + methodName + "' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  define(Gp, toStringTagSymbol, "Generator");
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  define(Gp, iteratorSymbol, function() {
+    return this;
+  });
+
+  define(Gp, "toString", function() {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(val) {
+    var object = Object(val);
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable != null) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    throw new TypeError(typeof iterable + " is not iterable");
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+  typeof module === "object" ? module.exports : {}
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
   } else {
-    const cached = ls.get("cache_"+league, null);
-    if(cached) render(cached, {});
-    else $("rows").innerHTML = '<div class="empty" tabindex="0">Không tải được dữ liệu.<br>'+esc(errs.join(" · "))+'<br>Kiểm tra mạng rồi bấm Cập nhật, hoặc vào Cài đặt đổi nguồn.</div>';
-    $("status").textContent = "Không tải được: " + errs.join(" · ") + (cached ? " · đang hiện dữ liệu lần trước" : "");
+    Function("r", "regeneratorRuntime = r")(runtime);
   }
-  } finally { busy = false; }
+}
+</script>
+<script>/* Hiện lỗi lên màn hình thay vì đứng im */
+window.onerror = function (msg, src, line) {
+  var s = document.getElementById("status");
+  if (s) s.textContent = "Lỗi app: " + msg + " (dòng " + line + ")";
+};</script>
+<script>function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+// [mã The Odds API, mã ESPN, tên]
+var LEAGUES = [["soccer_epl", "eng.1", "Ngoại hạng Anh"], ["soccer_spain_la_liga", "esp.1", "La Liga"], ["soccer_italy_serie_a", "ita.1", "Serie A"], ["soccer_germany_bundesliga", "ger.1", "Bundesliga"], ["soccer_france_ligue_one", "fra.1", "Ligue 1"], ["soccer_uefa_champs_league", "uefa.champions", "Cúp C1"], ["soccer_uefa_europa_league", "uefa.europa", "Cúp C2"]];
+var ls = {
+  get: function get(k, d) {
+    try {
+      var v = localStorage.getItem(k);
+      return v == null ? d : JSON.parse(v);
+    } catch (e) {
+      return d;
+    }
+  },
+  set: function set(k, v) {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch (e) {}
+  }
+};
+var $ = function $(id) {
+  return document.getElementById(id);
+};
+var findLeague = function findLeague(k) {
+  for (var _i = 0, _LEAGUES = LEAGUES; _i < _LEAGUES.length; _i++) {
+    var l = _LEAGUES[_i];
+    if (l[0] === k) return l;
+  }
+  return null;
+};
+var league = ls.get("league", LEAGUES[0][0]);
+if (!findLeague(league)) league = LEAGUES[0][0];
+var apiKey = ls.get("key", "");
+var remaining = ls.get("remaining", "");
+var pad2 = function pad2(n) {
+  return (n < 10 ? "0" : "") + n;
+};
+var hhmm = function hhmm(d) {
+  return pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+};
+
+/* ---------- gọi mạng qua Android (không bị chặn CORS) ---------- */
+var cbs = {};
+var cbn = 0;
+window.__cb = function (id, json) {
+  var f = cbs[id];
+  delete cbs[id];
+  if (f) f(JSON.parse(json));
+};
+function httpGet(url) {
+  return new Promise(function (res) {
+    if (window.Android) {
+      var id = "c" + ++cbn;
+      cbs[id] = res;
+      window.Android.get(url, id);
+    } else {
+      var x = new XMLHttpRequest();
+      x.open("GET", url);
+      x.timeout = 20000;
+      x.onload = function () {
+        return res({
+          status: x.status,
+          body: x.responseText,
+          remaining: x.getResponseHeader("x-requests-remaining") || ""
+        });
+      };
+      x.onerror = x.ontimeout = function () {
+        return res({
+          status: 0,
+          body: ""
+        });
+      };
+      x.send();
+    }
+  });
 }
 
-/* ---------- render ---------- */
-const fmt = v => v==null ? "–" : v.toFixed(2);
-function arrow(now, before){
-  if(now==null || before==null) return "";
-  const d = now - before;
-  if(Math.abs(d) < 0.02) return "";
+/* ---------- ESPN ---------- */
+function am2dec(v) {
+  if (v == null || v === "") return null;
+  if (v === "EVEN" || v === "EV") return 2;
+  var n = parseFloat(String(v).replace("+", ""));
+  if (!isFinite(n) || n === 0) return null;
+  return n > 0 ? 1 + n / 100 : 1 + 100 / Math.abs(n);
+}
+function pick() {
+  for (var i = 0; i < arguments.length; i++) {
+    var v = arguments[i];
+    if (v != null && v !== "") return v;
+  }
+  return null;
+}
+var g = function g(o, path) {
+  var x = o;
+  var _iterator = _createForOfIteratorHelper(path),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var k = _step.value;
+      if (x == null) return null;
+      x = x[k];
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return x;
+};
+function espnEvent(ev) {
+  var c = (ev.competitions || [])[0] || {};
+  var home = {},
+    away = {};
+  var _iterator2 = _createForOfIteratorHelper(c.competitors || []),
+    _step2;
+  try {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var t = _step2.value;
+      if (t.homeAway === "home") home = t;else away = t;
+    }
+  } catch (err) {
+    _iterator2.e(err);
+  } finally {
+    _iterator2.f();
+  }
+  var od = {};
+  var _iterator3 = _createForOfIteratorHelper(c.odds || []),
+    _step3;
+  try {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+      var _o = _step3.value;
+      if (_o) {
+        od = _o;
+        break;
+      }
+    }
+  } catch (err) {
+    _iterator3.e(err);
+  } finally {
+    _iterator3.f();
+  }
+  var ml = od.moneyline || {},
+    tot = od.total || {};
+  var st = g(ev, ["status", "type"]) || {};
+  var o = [am2dec(pick(g(od, ["homeTeamOdds", "moneyLine"]), g(ml, ["home", "close", "odds"]), g(ml, ["home", "open", "odds"]))), am2dec(pick(g(od, ["drawOdds", "moneyLine"]), g(ml, ["draw", "close", "odds"]), g(ml, ["draw", "open", "odds"]))), am2dec(pick(g(od, ["awayTeamOdds", "moneyLine"]), g(ml, ["away", "close", "odds"]), g(ml, ["away", "open", "odds"]))), am2dec(pick(od.overOdds, g(tot, ["over", "close", "odds"]), g(tot, ["over", "open", "odds"]))), am2dec(pick(od.underOdds, g(tot, ["under", "close", "odds"]), g(tot, ["under", "open", "odds"])))];
+  var open = [am2dec(g(ml, ["home", "open", "odds"])), am2dec(g(ml, ["draw", "open", "odds"])), am2dec(g(ml, ["away", "open", "odds"])), am2dec(g(tot, ["over", "open", "odds"])), am2dec(g(tot, ["under", "open", "odds"]))];
+  var line = od.overUnder;
+  if (line == null) {
+    var s = g(tot, ["over", "close", "line"]);
+    if (s) line = parseFloat(String(s).replace(/[a-z]/ig, ""));
+  }
+  var VI = {
+    "FT": "Hết",
+    "HT": "Nghỉ giữa giờ",
+    "Postponed": "Hoãn",
+    "Canceled": "Huỷ",
+    "AET": "Hết hiệp phụ",
+    "FT-Pens": "Hết luân lưu"
+  };
+  return {
+    id: ev.id,
+    t: ev.date,
+    home: g(home, ["team", "displayName"]) || "?",
+    away: g(away, ["team", "displayName"]) || "?",
+    o: o,
+    open: open,
+    line: line,
+    state: st.state || "pre",
+    detail: VI[st.shortDetail] || st.shortDetail || "",
+    hs: home.score,
+    as: away.score
+  };
+}
+function ymd(d) {
+  return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+}
+
+/* ---------- The Odds API (không bắt buộc) ---------- */
+function avg(a) {
+  if (!a.length) return null;
+  var s = 0;
+  var _iterator4 = _createForOfIteratorHelper(a),
+    _step4;
+  try {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var x = _step4.value;
+      s += x;
+    }
+  } catch (err) {
+    _iterator4.e(err);
+  } finally {
+    _iterator4.f();
+  }
+  return s / a.length;
+}
+function summarize(ev) {
+  var h = [],
+    d = [],
+    a = [],
+    ov = [],
+    un = [];
+  var _iterator5 = _createForOfIteratorHelper(ev.bookmakers || []),
+    _step5;
+  try {
+    for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+      var b = _step5.value;
+      var _iterator6 = _createForOfIteratorHelper(b.markets || []),
+        _step6;
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var m = _step6.value;
+          if (m.key === "h2h") {
+            var _iterator7 = _createForOfIteratorHelper(m.outcomes),
+              _step7;
+            try {
+              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+                var o = _step7.value;
+                if (o.name === ev.home_team) h.push(o.price);else if (o.name === ev.away_team) a.push(o.price);else d.push(o.price);
+              }
+            } catch (err) {
+              _iterator7.e(err);
+            } finally {
+              _iterator7.f();
+            }
+          }
+          if (m.key === "totals") {
+            var _iterator8 = _createForOfIteratorHelper(m.outcomes),
+              _step8;
+            try {
+              for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+                var _o2 = _step8.value;
+                if (_o2.point === 2.5) (_o2.name === "Over" ? ov : un).push(_o2.price);
+              }
+            } catch (err) {
+              _iterator8.e(err);
+            } finally {
+              _iterator8.f();
+            }
+          }
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+    }
+  } catch (err) {
+    _iterator5.e(err);
+  } finally {
+    _iterator5.f();
+  }
+  return {
+    id: ev.id,
+    t: ev.commence_time,
+    home: ev.home_team,
+    away: ev.away_team,
+    o: [avg(h), avg(d), avg(a), avg(ov), avg(un)],
+    open: [],
+    line: 2.5,
+    state: "pre",
+    detail: (ev.bookmakers || []).length + " nhà cái"
+  };
+}
+var busy = false;
+function refresh() {
+  return _refresh.apply(this, arguments);
+}
+/* ---------- vẽ bảng ---------- */
+function _refresh() {
+  _refresh = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+    var L, name, list, err, used, r, a, b, _r, cached;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          if (!busy) {
+            _context.n = 1;
+            break;
+          }
+          return _context.a(2);
+        case 1:
+          busy = true;
+          _context.p = 2;
+          L = findLeague(league), name = L[2];
+          $("status").textContent = "Đang tải " + name + "…";
+          list = null, err = "", used = "";
+          if (!apiKey) {
+            _context.n = 4;
+            break;
+          }
+          _context.n = 3;
+          return httpGet("https://api.the-odds-api.com/v4/sports/" + L[0] + "/odds/?regions=eu&markets=h2h,totals&oddsFormat=decimal&apiKey=" + encodeURIComponent(apiKey));
+        case 3:
+          r = _context.v;
+          if (r.status === 200) {
+            try {
+              list = JSON.parse(r.body).map(summarize);
+              used = "The Odds API";
+              if (r.remaining) {
+                remaining = r.remaining;
+                ls.set("remaining", remaining);
+              }
+            } catch (e) {}
+          } else err = r.status === 401 ? "Mã the-odds-api sai, đã dùng ESPN. " : r.status === 429 ? "Hết lượt the-odds-api, đã dùng ESPN. " : "";
+        case 4:
+          if (list) {
+            _context.n = 6;
+            break;
+          }
+          a = new Date(Date.now() - 86400e3), b = new Date(Date.now() + 7 * 86400e3);
+          _context.n = 5;
+          return httpGet("https://site.api.espn.com/apis/site/v2/sports/soccer/" + L[1] + "/scoreboard?limit=100&dates=" + ymd(a) + "-" + ymd(b));
+        case 5:
+          _r = _context.v;
+          if (_r.status === 200) {
+            try {
+              list = (JSON.parse(_r.body).events || []).map(espnEvent);
+              used = "ESPN";
+            } catch (e) {
+              err += "ESPN trả dữ liệu lạ.";
+            }
+          } else err += _r.status === 0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + _r.status + ".";
+        case 6:
+          if (list) {
+            render(list);
+            ls.set("cache_" + league, list);
+            $("status").textContent = err + name + " · " + used + " · cập nhật " + hhmm(new Date()) + (used === "The Odds API" && remaining ? " · còn " + remaining + " lượt" : "");
+          } else {
+            cached = ls.get("cache_" + league, null);
+            if (cached) render(cached);else $("rows").innerHTML = '<div class="empty" tabindex="0">Không tải được dữ liệu.<br>' + esc(err) + '<br>Kiểm tra mạng rồi bấm Cập nhật.</div>';
+            $("status").textContent = "Không tải được: " + err + (cached ? " Đang hiện dữ liệu lần trước." : "");
+          }
+        case 7:
+          _context.p = 7;
+          busy = false;
+          return _context.f(7);
+        case 8:
+          return _context.a(2);
+      }
+    }, _callee, null, [[2,, 7, 8]]);
+  }));
+  return _refresh.apply(this, arguments);
+}
+var fmt = function fmt(v) {
+  return v == null ? "–" : v.toFixed(2);
+};
+function arrow(now, before) {
+  if (now == null || before == null) return "";
+  var d = now - before;
+  if (Math.abs(d) < 0.02) return "";
   return d > 0 ? '<span class="a up">▲</span>' : '<span class="a down">▼</span>';
 }
-function render(list, prev){
-  list.sort((a,b)=>new Date(a.t)-new Date(b.t));
-  if(!list.length){ $("rows").innerHTML = '<div class="empty" tabindex="0">Hôm nay và ngày mai giải này chưa có trận nào.</div>'; return; }
-  const days = ["CN","T2","T3","T4","T5","T6","T7"];
-  let html = "", lastDay = "";
-  for(const m of list){
-    const d = new Date(m.t);
-    const dayKey = d.toDateString();
-    if(dayKey !== lastDay){
-      lastDay = dayKey;
-      html += `<div class="day">${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}</div>`;
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;"
+    }[c];
+  });
+}
+function render(list) {
+  list.sort(function (a, b) {
+    return new Date(a.t) - new Date(b.t);
+  });
+  if (!list.length) {
+    $("rows").innerHTML = '<div class="empty" tabindex="0">Tuần này giải chưa có trận nào.</div>';
+    return;
+  }
+  var days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
+  var html = "",
+    lastDay = "";
+  var _iterator9 = _createForOfIteratorHelper(list),
+    _step9;
+  try {
+    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+      var m = _step9.value;
+      var d = new Date(m.t),
+        dayKey = d.toDateString();
+      if (dayKey !== lastDay) {
+        lastDay = dayKey;
+        html += '<div class="day">' + days[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth() + 1) + '</div>';
+      }
+      var live = m.state === "in";
+      var score = m.state !== "pre" && m.hs != null ? m.hs + " - " + m.as : "";
+      var sub = live ? score + " · " + esc(m.detail) : m.state === "post" ? "Hết · " + score : esc(m.detail === "Scheduled" ? "" : m.detail);
+      var fav = Math.min(m.o[0] == null ? 99 : m.o[0], m.o[2] == null ? 99 : m.o[2]);
+      var p = m.open || [];
+      var cells = "";
+      for (var i = 0; i < 5; i++) {
+        var v = m.o[i];
+        cells += '<div class="o' + (i > 2 ? " t" : "") + (v == null ? " na" : "") + (i !== 1 && i < 3 && v === fav ? " fav" : "") + '">' + fmt(v) + arrow(v, p[i]) + '</div>';
+      }
+      var hw = m.state === "post" && +m.hs > +m.as,
+        aw = m.state === "post" && +m.as > +m.hs;
+      html += '<div class="row" tabindex="0">' + '<div class="time' + (live ? " live" : "") + '">' + hhmm(d) + '<small>' + sub + '</small></div>' + '<div class="teams"><div class="' + (m.state === "pre" || hw ? "win" : "") + '">' + esc(m.home) + '</div><div class="' + (aw ? "win" : "") + '">' + esc(m.away) + '</div></div>' + cells + (m.line != null && m.line !== 2.5 && m.o[3] != null ? '<div class="lineinfo">Mốc Tài/Xỉu: ' + m.line + ' bàn</div>' : "") + '</div>';
     }
-    const state = m.state || (d.getTime() <= Date.now() ? "in" : "pre");
-    const live = state==="in";
-    const sub = state==="other" ? esc(m.detail) : state==="in" ? (m.score ? m.score+" · "+esc(m.detail) : "Đang đá") : state==="post" ? "Hết · "+m.score : (m.n ? m.n+" nhà cái" : "");
-    const p = (prev[m.id] && prev[m.id].length) ? prev[m.id] : (m.open || []);
-    const min = Math.min(...[m.o[0],m.o[2]].filter(v=>v!=null));
-    const cell = (i, cls) => `<div class="o ${cls||""} ${m.o[i]==null?"na":""} ${i<3&&m.o[i]===min?"fav":""}">${fmt(m.o[i])}${arrow(m.o[i],p[i])}</div>`;
-    html += `<div class="row" tabindex="0">
-      <div class="time ${live?"live":""}">${d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}<small>${sub}</small></div>
-      <div class="teams"><div>${esc(m.home)}</div><div>${esc(m.away)}</div>${league==="vietnam"&&m.tour?`<div class="tour">${esc(m.tour)}</div>`:""}</div>
-      ${cell(0)}${cell(1)}${cell(2)}${cell(3,"t")}${cell(4,"t")}${m.line&&m.line!=2.5?`<div class="lineinfo">Mốc Tài/Xỉu: ${m.line}</div>`:""}
-    </div>`;
+  } catch (err) {
+    _iterator9.e(err);
+  } finally {
+    _iterator9.f();
   }
   $("rows").innerHTML = html;
 }
-function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
-/* ---------- tabs, settings ---------- */
-function drawTabs(){
-  $("tabs").innerHTML = LEAGUES.map(l=>`<button data-k="${l[0]}" class="${l[0]===league?"on":""}">${l[3]}</button>`).join("");
+/* ---------- tab giải, cài đặt ---------- */
+function drawTabs() {
+  var h = "";
+  for (var _i2 = 0, _LEAGUES2 = LEAGUES; _i2 < _LEAGUES2.length; _i2++) {
+    var l = _LEAGUES2[_i2];
+    h += '<button data-k="' + l[0] + '" class="' + (l[0] === league ? "on" : "") + '">' + l[2] + '</button>';
+  }
+  $("tabs").innerHTML = h;
 }
-$("tabs").addEventListener("click", e => {
-  const b = e.target.closest("button"); if(!b) return;
-  league = b.dataset.k; ls.set("league", league); drawTabs();
-  $("tabs").querySelector(`[data-k="${league}"]`).focus();
-  const cached = ls.get("cache_"+league, null);
-  if(cached && apiKey){ render(cached, {}); $("status").textContent = "Dữ liệu lần trước · bấm Cập nhật để lấy mới"; }
-  else { if(cached) render(cached, {}); refresh(); }
+$("tabs").addEventListener("click", function (e) {
+  var b = e.target;
+  while (b && b.tagName !== "BUTTON") b = b.parentNode;
+  if (!b || !b.getAttribute("data-k")) return;
+  league = b.getAttribute("data-k");
+  ls.set("league", league);
+  drawTabs();
+  var nb = $("tabs").querySelector('[data-k="' + league + '"]');
+  if (nb) nb.focus();
+  var cached = ls.get("cache_" + league, null);
+  if (cached) render(cached);
+  refresh();
 });
 $("refresh").onclick = refresh;
-$("settings").onclick = () => { $("modal").hidden = false; $("key").value = apiKey; drawSrc(); $("srcSofa").focus(); };
+$("settings").onclick = function () {
+  $("modal").hidden = false;
+  $("key").value = apiKey;
+  $("saveKey").focus();
+};
 $("closeModal").onclick = closeModal;
-function drawSrc(){ $("srcSofa").classList.toggle("on", source==="sofa"); $("srcEspn").classList.toggle("on", source==="espn"); }
-$("srcSofa").onclick = () => { source="sofa"; ls.set("source",source); drawSrc(); refresh(); };
-$("srcEspn").onclick = () => { source="espn"; ls.set("source",source); drawSrc(); refresh(); };
-drawSrc();
-$("saveKey").onclick = () => { apiKey = $("key").value.trim(); ls.set("key", apiKey); closeModal(); refresh(); };
-function closeModal(){ $("modal").hidden = true; $("settings").focus(); }
-window.onBack = () => { if(!$("modal").hidden){ closeModal(); return true; } return false; };
-
-/* ---------- remote: arrows move to nearest item ---------- */
-function focusables(){
-  const scope = $("modal").hidden ? document : $("modal");
-  return [...scope.querySelectorAll("button, .row, .empty, input")].filter(el => el.offsetParent !== null);
+$("saveKey").onclick = function () {
+  apiKey = $("key").value.trim();
+  ls.set("key", apiKey);
+  closeModal();
+  refresh();
+};
+function closeModal() {
+  $("modal").hidden = true;
+  $("settings").focus();
 }
-document.addEventListener("keydown", e => {
-  const dirs = {ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0]};
-  const dv = dirs[e.key];
-  if(e.key==="Enter" && document.activeElement.classList.contains("row")) return;
-  if(!dv) return;
-  const cur = document.activeElement;
-  if(cur && cur.tagName==="INPUT" && dv[1]===0) return;
-  e.preventDefault();
-  if(!cur || cur===document.body){ focusables()[0]?.focus(); return; }
-  const r = cur.getBoundingClientRect(), cx = r.left+r.width/2, cy = r.top+r.height/2;
-  let best=null, bs=Infinity;
-  for(const el of focusables()){
-    if(el===cur) continue;
-    const b = el.getBoundingClientRect(), dx = b.left+b.width/2-cx, dy = b.top+b.height/2-cy;
-    const along = dv[0] ? dx*dv[0] : dy*dv[1];
-    if(along <= 4) continue;
-    const s = along + (dv[0]?Math.abs(dy):Math.abs(dx))*2.5;
-    if(s<bs){ bs=s; best=el; }
+window.onBack = function () {
+  if (!$("modal").hidden) {
+    closeModal();
+    return true;
   }
-  if(best){ best.focus(); best.scrollIntoView({block:"nearest"}); }
-});
+  return false;
+};
+var cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
+$("ua").textContent = "Bảng Kèo 1.2 · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/) || [])[1] || "?");
 
-function tick(){ $("clock").textContent = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"}); }
-tick(); setInterval(tick, 15000);
+/* ---------- điều khiển bằng remote: mũi tên nhảy tới ô gần nhất ---------- */
+function focusables() {
+  var scope = $("modal").hidden ? document : $("modal");
+  var all = scope.querySelectorAll("button, .row, .empty, input"),
+    out = [];
+  for (var i = 0; i < all.length; i++) if (all[i].offsetParent !== null) out.push(all[i]);
+  return out;
+}
+document.addEventListener("keydown", function (e) {
+  var k = e.key || "",
+    kc = e.keyCode;
+  var dv = k === "ArrowUp" || kc === 38 ? [0, -1] : k === "ArrowDown" || kc === 40 ? [0, 1] : k === "ArrowLeft" || kc === 37 ? [-1, 0] : k === "ArrowRight" || kc === 39 ? [1, 0] : null;
+  if (!dv) return;
+  var cur = document.activeElement;
+  if (cur && cur.tagName === "INPUT" && dv[1] === 0) return;
+  e.preventDefault();
+  var list = focusables();
+  if (!cur || cur === document.body) {
+    if (list[0]) list[0].focus();
+    return;
+  }
+  var r = cur.getBoundingClientRect(),
+    cx = r.left + r.width / 2,
+    cy = r.top + r.height / 2;
+  var best = null,
+    bs = Infinity;
+  var _iterator0 = _createForOfIteratorHelper(list),
+    _step0;
+  try {
+    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+      var el = _step0.value;
+      if (el === cur) continue;
+      var b = el.getBoundingClientRect(),
+        dx = b.left + b.width / 2 - cx,
+        dy = b.top + b.height / 2 - cy;
+      var along = dv[0] ? dx * dv[0] : dy * dv[1];
+      if (along <= 4) continue;
+      var s = along + (dv[0] ? Math.abs(dy) : Math.abs(dx)) * 2.5;
+      if (s < bs) {
+        bs = s;
+        best = el;
+      }
+    }
+  } catch (err) {
+    _iterator0.e(err);
+  } finally {
+    _iterator0.f();
+  }
+  if (best) {
+    best.focus();
+    if (best.scrollIntoView) best.scrollIntoView(false);
+  }
+});
+function tick() {
+  $("clock").textContent = hhmm(new Date());
+}
+tick();
+setInterval(tick, 15000);
 drawTabs();
-const cached0 = ls.get("cache_"+league, null);
-if(cached0) render(cached0, {});
-if(cached0 && apiKey) $("status").textContent = "Dữ liệu lần trước · bấm Cập nhật để lấy mới"; else refresh();
-setInterval(()=>{ if(!apiKey && $("modal").hidden) refresh(); }, 5*60e3); // ESPN miễn phí: tự cập nhật 5 phút/lần
-setTimeout(()=>$("tabs").querySelector(".on")?.focus(), 150);
-</script>
+var cached0 = ls.get("cache_" + league, null);
+if (cached0) render(cached0);
+refresh();
+setInterval(function () {
+  if ($("modal").hidden) refresh();
+}, 5 * 60e3);
+setTimeout(function () {
+  var b = $("tabs").querySelector(".on");
+  if (b) b.focus();
+}, 150);</script>
 </body>
 </html>
