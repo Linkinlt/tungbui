@@ -26,7 +26,7 @@ h1 span{color:var(--accent)}
 .status{color:var(--muted);font-size:.75em;flex:1;min-width:0}
 .clock{font-size:1.6em;font-weight:700}
 .tabs{display:flex;flex-wrap:wrap}
-.tabs button{margin:0 10px 8px 0}
+.tabs button{margin:0 8px 8px 0;font-size:.72em;padding:8px 14px}
 button{font:inherit;font-size:.85em;font-weight:700;padding:10px 18px;border-radius:10px;border:3px solid var(--line);background:var(--panel);color:var(--fg);outline:none}
 button.on{background:var(--accent);color:#0d1612;border-color:var(--accent)}
 button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px rgba(255,210,63,.3)}
@@ -42,6 +42,8 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .teams{min-width:0;line-height:1.25}
 .teams div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .teams div.win{font-weight:800}
+.teams div.lg{color:var(--accent);font-size:.62em;font-weight:600;letter-spacing:.02em}
+.ver{float:right;margin-right:0!important;opacity:.7}
 .o{font-size:1.15em;font-weight:800}
 .o.fav{color:var(--focus)}
 .o .a{font-size:.6em;margin-left:2px}
@@ -53,15 +55,6 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .legend{color:var(--muted);font-size:.66em}
 .legend span{display:inline-block;margin-right:24px}
 .legend b{color:var(--fg)}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9}
-.box{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:28px;width:90%;max-width:900px}
-.box > *{margin:0 0 14px}
-.box > *:last-child{margin-bottom:0}
-.box p{color:var(--muted);font-size:.8em;line-height:1.5}
-.box input{display:block;width:100%;font:inherit;padding:12px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--fg);outline:none}
-.box input:focus{border-color:var(--focus)}
-.box button{margin-right:12px}
-.small{font-size:.65em!important;word-break:break-all}
 [hidden]{display:none!important}
 @media (max-width:700px){.head,.row{grid-template-columns:4.4em minmax(0,1fr) 3.4em 3.4em 3.4em}.head div:nth-child(n+6),.row .t{display:none}}
 </style>
@@ -71,8 +64,6 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
   <header>
     <h1>Bảng <span>Kèo</span></h1>
     <div class="status" id="status">Đang mở…</div>
-    <button id="refresh">⟳ Cập nhật</button>
-    <button id="settings">Cài đặt</button>
     <div class="clock" id="clock"></div>
   </header>
   <nav class="tabs" id="tabs"></nav>
@@ -84,18 +75,8 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
     <span><b>1</b> chủ nhà thắng · <b>X</b> hoà · <b>2</b> khách thắng</span>
     <span>Số <b style="color:#ffd23f">vàng</b> là đội được đánh giá mạnh hơn</span>
     <span><b style="color:#7fd99a">▲</b><b style="color:#ff7a6b">▼</b> tăng/giảm so với lúc mở kèo</span>
-    <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là chưa có tỷ lệ</span>
-  </div>
-</div>
-
-<div class="modal" id="modal" hidden>
-  <div class="box">
-    <h2>Cài đặt</h2>
-    <p>Bình thường app lấy tỷ lệ miễn phí từ ESPN, tự cập nhật 5 phút một lần, không cần làm gì.</p>
-    <p>Không bắt buộc: nếu có mã của the-odds-api.com, nhập vào đây để lấy tỷ lệ trung bình nhiều nhà cái. Để trống là dùng ESPN.</p>
-    <input id="key" placeholder="Mã the-odds-api.com (có thể để trống)" autocomplete="off" spellcheck="false">
-    <div><button id="saveKey">Lưu</button><button id="closeModal">Đóng</button></div>
-    <p class="small" id="ua"></p>
+    <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là nhà cái chưa mở tỷ lệ</span>
+    <span class="ver" id="ver"></span>
   </div>
 </div>
 
@@ -873,8 +854,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-// [mã The Odds API, mã ESPN, tên]
-var LEAGUES = [["soccer_epl", "eng.1", "Ngoại hạng Anh"], ["soccer_spain_la_liga", "esp.1", "La Liga"], ["soccer_italy_serie_a", "ita.1", "Serie A"], ["soccer_germany_bundesliga", "ger.1", "Bundesliga"], ["soccer_france_ligue_one", "fra.1", "Ligue 1"], ["soccer_uefa_champs_league", "uefa.champions", "Cúp C1"], ["soccer_uefa_europa_league", "uefa.europa", "Cúp C2"]];
+// [mã ESPN, tên đầy đủ, tên ngắn hiện trong bảng chung]
+var LEAGUES = [["eng.1", "Ngoại hạng Anh", "Anh"], ["esp.1", "La Liga", "TBN"], ["ita.1", "Serie A", "Ý"], ["ger.1", "Bundesliga", "Đức"], ["fra.1", "Ligue 1", "Pháp"], ["uefa.champions", "Cúp C1", "C1"], ["uefa.europa", "Cúp C2", "C2"], ["uefa.europa.conf", "Cúp C3", "C3"], ["eng.2", "Hạng nhất Anh", "Anh 2"], ["ned.1", "Hà Lan", "Hà Lan"], ["por.1", "Bồ Đào Nha", "BĐN"], ["tur.1", "Thổ Nhĩ Kỳ", "Thổ"], ["sco.1", "Scotland", "Scot"], ["bel.1", "Bỉ", "Bỉ"], ["kor.1", "Hàn Quốc", "Hàn"], ["jpn.1", "Nhật Bản", "Nhật"], ["chn.1", "Trung Quốc", "Trung"], ["aus.1", "Úc", "Úc"], ["ksa.1", "Ả Rập Xê Út", "Ả Rập"], ["usa.1", "Mỹ MLS", "Mỹ"], ["mex.1", "Mexico", "Mexico"], ["bra.1", "Brazil", "Brazil"], ["arg.1", "Argentina", "Arg"]];
+var ALL = "all";
 var ls = {
   get: function get(k, d) {
     try {
@@ -900,18 +882,20 @@ var findLeague = function findLeague(k) {
   }
   return null;
 };
-var league = ls.get("league", LEAGUES[0][0]);
-if (!findLeague(league)) league = LEAGUES[0][0];
-var apiKey = ls.get("key", "");
-var remaining = ls.get("remaining", "");
+var bad = ls.get("bad2", {}); // giải ESPN không có -> ẩn tab
+var league = ls.get("tab", ALL);
+if (league !== ALL && (!findLeague(league) || bad[league])) league = ALL;
 var pad2 = function pad2(n) {
   return (n < 10 ? "0" : "") + n;
 };
 var hhmm = function hhmm(d) {
   return pad2(d.getHours()) + ":" + pad2(d.getMinutes());
 };
+function ymd(d) {
+  return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+}
 
-/* ---------- gọi mạng qua Android (không bị chặn CORS) ---------- */
+/* ---------- gọi mạng qua Android ---------- */
 var cbs = {};
 var cbn = 0;
 window.__cb = function (id, json) {
@@ -932,8 +916,7 @@ function httpGet(url) {
       x.onload = function () {
         return res({
           status: x.status,
-          body: x.responseText,
-          remaining: x.getResponseHeader("x-requests-remaining") || ""
+          body: x.responseText
         });
       };
       x.onerror = x.ontimeout = function () {
@@ -947,7 +930,7 @@ function httpGet(url) {
   });
 }
 
-/* ---------- ESPN ---------- */
+/* ---------- đọc dữ liệu ESPN ---------- */
 function am2dec(v) {
   if (v == null || v === "") return null;
   if (v === "EVEN" || v === "EV") return 2;
@@ -979,7 +962,7 @@ var g = function g(o, path) {
   }
   return x;
 };
-function espnEvent(ev) {
+function espnEvent(ev, lg) {
   var c = (ev.competitions || [])[0] || {};
   var home = {},
     away = {};
@@ -1032,6 +1015,7 @@ function espnEvent(ev) {
   return {
     id: ev.id,
     t: ev.date,
+    lg: lg,
     home: g(home, ["team", "displayName"]) || "?",
     away: g(away, ["team", "displayName"]) || "?",
     o: o,
@@ -1043,202 +1027,281 @@ function espnEvent(ev) {
     as: away.score
   };
 }
-function ymd(d) {
-  return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
-}
 
-/* ---------- The Odds API (không bắt buộc) ---------- */
-function avg(a) {
-  if (!a.length) return null;
-  var s = 0;
-  var _iterator4 = _createForOfIteratorHelper(a),
-    _step4;
-  try {
-    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-      var x = _step4.value;
-      s += x;
-    }
-  } catch (err) {
-    _iterator4.e(err);
-  } finally {
-    _iterator4.f();
-  }
-  return s / a.length;
+/* ---------- tải một giải ---------- */
+var BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer/";
+var data = {}; // slug -> {list, at}
+function loadLeague(_x, _x2) {
+  return _loadLeague.apply(this, arguments);
 }
-function summarize(ev) {
-  var h = [],
-    d = [],
-    a = [],
-    ov = [],
-    un = [];
-  var _iterator5 = _createForOfIteratorHelper(ev.bookmakers || []),
-    _step5;
-  try {
-    for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-      var b = _step5.value;
-      var _iterator6 = _createForOfIteratorHelper(b.markets || []),
-        _step6;
-      try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var m = _step6.value;
-          if (m.key === "h2h") {
-            var _iterator7 = _createForOfIteratorHelper(m.outcomes),
-              _step7;
+function _loadLeague() {
+  _loadLeague = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(slug, extraDays) {
+    var reqs, k, rs, seen, list, _iterator8, _step8, r, _iterator9, _step9, ev, _t;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          reqs = [httpGet(BASE + slug + "/scoreboard")];
+          for (k = 1; k <= extraDays; k++) reqs.push(httpGet(BASE + slug + "/scoreboard?dates=" + ymd(new Date(Date.now() + k * 86400e3))));
+          _context.n = 1;
+          return Promise.all(reqs);
+        case 1:
+          rs = _context.v;
+          if (!(rs[0].status === 400 || rs[0].status === 404)) {
+            _context.n = 2;
+            break;
+          }
+          bad[slug] = 1;
+          ls.set("bad2", bad);
+          return _context.a(2, {
+            status: rs[0].status
+          });
+        case 2:
+          if (rs.some(function (r) {
+            return r.status === 200;
+          })) {
+            _context.n = 3;
+            break;
+          }
+          return _context.a(2, {
+            status: rs[0].status
+          });
+        case 3:
+          seen = {}, list = [];
+          _iterator8 = _createForOfIteratorHelper(rs);
+          _context.p = 4;
+          _iterator8.s();
+        case 5:
+          if ((_step8 = _iterator8.n()).done) {
+            _context.n = 8;
+            break;
+          }
+          r = _step8.value;
+          if (!(r.status !== 200)) {
+            _context.n = 6;
+            break;
+          }
+          return _context.a(3, 7);
+        case 6:
+          try {
+            _iterator9 = _createForOfIteratorHelper(JSON.parse(r.body).events || []);
             try {
-              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-                var o = _step7.value;
-                if (o.name === ev.home_team) h.push(o.price);else if (o.name === ev.away_team) a.push(o.price);else d.push(o.price);
+              for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+                ev = _step9.value;
+                if (!seen[ev.id]) {
+                  seen[ev.id] = 1;
+                  list.push(espnEvent(ev, slug));
+                }
               }
             } catch (err) {
-              _iterator7.e(err);
+              _iterator9.e(err);
             } finally {
-              _iterator7.f();
+              _iterator9.f();
             }
-          }
-          if (m.key === "totals") {
-            var _iterator8 = _createForOfIteratorHelper(m.outcomes),
-              _step8;
-            try {
-              for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-                var _o2 = _step8.value;
-                if (_o2.point === 2.5) (_o2.name === "Over" ? ov : un).push(_o2.price);
-              }
-            } catch (err) {
-              _iterator8.e(err);
-            } finally {
-              _iterator8.f();
-            }
-          }
-        }
-      } catch (err) {
-        _iterator6.e(err);
-      } finally {
-        _iterator6.f();
+          } catch (e) {}
+        case 7:
+          _context.n = 5;
+          break;
+        case 8:
+          _context.n = 10;
+          break;
+        case 9:
+          _context.p = 9;
+          _t = _context.v;
+          _iterator8.e(_t);
+        case 10:
+          _context.p = 10;
+          _iterator8.f();
+          return _context.f(10);
+        case 11:
+          data[slug] = {
+            list: list,
+            at: Date.now()
+          };
+          return _context.a(2, {
+            status: 200
+          });
       }
-    }
-  } catch (err) {
-    _iterator5.e(err);
-  } finally {
-    _iterator5.f();
-  }
-  return {
-    id: ev.id,
-    t: ev.commence_time,
-    home: ev.home_team,
-    away: ev.away_team,
-    o: [avg(h), avg(d), avg(a), avg(ov), avg(un)],
-    open: [],
-    line: 2.5,
-    state: "pre",
-    detail: (ev.bookmakers || []).length + " nhà cái"
-  };
+    }, _callee, null, [[4, 9, 10, 11]]);
+  }));
+  return _loadLeague.apply(this, arguments);
 }
-var busy = false;
+function pool(_x3, _x4, _x5) {
+  return _pool.apply(this, arguments);
+}
+function _pool() {
+  _pool = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(items, n, fn) {
+    var i, worker, _worker, ws, k;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          _worker = function _worker3() {
+            _worker = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+              var it;
+              return _regenerator().w(function (_context2) {
+                while (1) switch (_context2.n) {
+                  case 0:
+                    if (!(i < items.length)) {
+                      _context2.n = 2;
+                      break;
+                    }
+                    it = items[i++];
+                    _context2.n = 1;
+                    return fn(it);
+                  case 1:
+                    _context2.n = 0;
+                    break;
+                  case 2:
+                    return _context2.a(2);
+                }
+              }, _callee2);
+            }));
+            return _worker.apply(this, arguments);
+          };
+          worker = function _worker2() {
+            return _worker.apply(this, arguments);
+          };
+          i = 0;
+          ws = [];
+          for (k = 0; k < n; k++) ws.push(worker());
+          _context3.n = 1;
+          return Promise.all(ws);
+        case 1:
+          return _context3.a(2);
+      }
+    }, _callee3);
+  }));
+  return _pool.apply(this, arguments);
+}
+var busy = false,
+  lastAll = 0;
 function refresh() {
   return _refresh.apply(this, arguments);
 }
 /* ---------- vẽ bảng ---------- */
 function _refresh() {
-  _refresh = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-    var L, name, list, err, used, r, base, reqs, k, rs, seen, merged, cached;
-    return _regenerator().w(function (_context) {
-      while (1) switch (_context.p = _context.n) {
+  _refresh = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5() {
+    var slugs, ok, fail, lastErr, L, r;
+    return _regenerator().w(function (_context5) {
+      while (1) switch (_context5.p = _context5.n) {
         case 0:
           if (!busy) {
-            _context.n = 1;
+            _context5.n = 1;
             break;
           }
-          return _context.a(2);
+          return _context5.a(2);
         case 1:
           busy = true;
-          _context.p = 2;
-          L = findLeague(league), name = L[2];
-          $("status").textContent = "Đang tải " + name + "…";
-          list = null, err = "", used = "";
-          if (!apiKey) {
-            _context.n = 4;
+          _context5.p = 2;
+          if (!(league === ALL)) {
+            _context5.n = 4;
             break;
           }
-          _context.n = 3;
-          return httpGet("https://api.the-odds-api.com/v4/sports/" + L[0] + "/odds/?regions=eu&markets=h2h,totals&oddsFormat=decimal&apiKey=" + encodeURIComponent(apiKey));
-        case 3:
-          r = _context.v;
-          if (r.status === 200) {
-            try {
-              list = JSON.parse(r.body).map(summarize);
-              used = "The Odds API";
-              if (r.remaining) {
-                remaining = r.remaining;
-                ls.set("remaining", remaining);
-              }
-            } catch (e) {}
-          } else err = r.status === 401 ? "Mã the-odds-api sai, đã dùng ESPN. " : r.status === 429 ? "Hết lượt the-odds-api, đã dùng ESPN. " : "";
-        case 4:
-          if (list) {
-            _context.n = 6;
-            break;
-          }
-          // Địa chỉ chính: đúng như đã thử thành công trên mạng FPT (không thêm tham số)
-          base = "https://site.api.espn.com/apis/site/v2/sports/soccer/" + L[1] + "/scoreboard";
-          reqs = [httpGet(base)]; // Lấy thêm từng ngày tới (nếu ESPN không nhận thì bỏ qua)
-          for (k = 1; k <= 3; k++) reqs.push(httpGet(base + "?dates=" + ymd(new Date(Date.now() + k * 86400e3))));
-          _context.n = 5;
-          return Promise.all(reqs);
-        case 5:
-          rs = _context.v;
-          seen = {}, merged = [];
-          rs.forEach(function (r, i) {
-            if (r.status !== 200) {
-              if (i === 0) err += r.status === 0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + ".";
-              return;
-            }
-            try {
-              var _iterator1 = _createForOfIteratorHelper(JSON.parse(r.body).events || []),
-                _step1;
-              try {
-                for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-                  var ev = _step1.value;
-                  if (!seen[ev.id]) {
-                    seen[ev.id] = 1;
-                    merged.push(espnEvent(ev));
-                  }
-                }
-              } catch (err) {
-                _iterator1.e(err);
-              } finally {
-                _iterator1.f();
-              }
-            } catch (e) {
-              if (i === 0) err += "ESPN trả dữ liệu lạ.";
-            }
+          slugs = LEAGUES.filter(function (l) {
+            return !bad[l[0]];
+          }).map(function (l) {
+            return l[0];
           });
-          if (rs.some(function (r) {
-            return r.status === 200;
-          })) {
-            list = merged;
-            used = "ESPN";
-            if (rs[0].status === 200) err = err.replace(/ESPN.*$/, "");
+          $("status").textContent = "Đang tải tất cả các giải…";
+          ok = 0, fail = 0, lastErr = 0;
+          _context5.n = 3;
+          return pool(slugs, 6, /*#__PURE__*/function () {
+            var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(slug) {
+              var r;
+              return _regenerator().w(function (_context4) {
+                while (1) switch (_context4.n) {
+                  case 0:
+                    _context4.n = 1;
+                    return loadLeague(slug, 0);
+                  case 1:
+                    r = _context4.v;
+                    if (r.status === 200) ok++;else {
+                      fail++;
+                      lastErr = r.status;
+                    }
+                  case 2:
+                    return _context4.a(2);
+                }
+              }, _callee4);
+            }));
+            return function (_x6) {
+              return _ref.apply(this, arguments);
+            };
+          }());
+        case 3:
+          drawTabs();
+          if (ok) {
+            lastAll = Date.now();
+            show();
+            $("status").textContent = "Tất cả giải · ESPN · cập nhật " + hhmm(new Date());
+          } else $("status").textContent = "Không tải được: " + (lastErr === 0 ? "không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + lastErr + ".");
+          _context5.n = 8;
+          break;
+        case 4:
+          L = findLeague(league);
+          $("status").textContent = "Đang tải " + L[1] + "…";
+          _context5.n = 5;
+          return loadLeague(league, 3);
+        case 5:
+          r = _context5.v;
+          if (!(r.status === 200)) {
+            _context5.n = 6;
+            break;
           }
+          show();
+          $("status").textContent = L[1] + " · ESPN · cập nhật " + hhmm(new Date());
+          _context5.n = 8;
+          break;
         case 6:
-          if (list) {
-            render(list);
-            ls.set("cache_" + league, list);
-            $("status").textContent = err + name + " · " + used + " · cập nhật " + hhmm(new Date()) + (used === "The Odds API" && remaining ? " · còn " + remaining + " lượt" : "");
-          } else {
-            cached = ls.get("cache_" + league, null);
-            if (cached) render(cached);else $("rows").innerHTML = '<div class="empty" tabindex="0">Không tải được dữ liệu.<br>' + esc(err) + '<br>Kiểm tra mạng rồi bấm Cập nhật.</div>';
-            $("status").textContent = "Không tải được: " + err + (cached ? " Đang hiện dữ liệu lần trước." : "");
+          if (!bad[league]) {
+            _context5.n = 7;
+            break;
           }
-        case 7:
-          _context.p = 7;
+          league = ALL;
+          ls.set("tab", ALL);
+          drawTabs();
           busy = false;
-          return _context.f(7);
+          return _context5.a(2, refresh());
+        case 7:
+          $("status").textContent = "Không tải được: " + (r.status === 0 ? "không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + ".") + (data[league] ? " Đang hiện dữ liệu lần trước." : "");
         case 8:
-          return _context.a(2);
+          _context5.p = 8;
+          busy = false;
+          return _context5.f(8);
+        case 9:
+          return _context5.a(2);
       }
-    }, _callee, null, [[2,, 7, 8]]);
+    }, _callee5, null, [[2,, 8, 9]]);
   }));
   return _refresh.apply(this, arguments);
+}
+function show() {
+  var list = [];
+  if (league === ALL) {
+    var from = Date.now() - 3 * 3600e3,
+      to = Date.now() + 3 * 86400e3;
+    for (var slug in data) {
+      if (bad[slug]) continue;
+      var _iterator4 = _createForOfIteratorHelper(data[slug].list),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var m = _step4.value;
+          var t = new Date(m.t).getTime();
+          if (m.state === "in" || t >= from && t <= to) list.push(m);
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+    }
+  } else if (data[league]) list = data[league].list.slice();
+  render(list);
+  if (!busy) {
+    var L = findLeague(league),
+      at = league === ALL ? lastAll : data[league] ? data[league].at : 0;
+    if (at) $("status").textContent = (league === ALL ? "Tất cả giải" : L[1]) + " · ESPN · cập nhật " + hhmm(new Date(at));
+  }
 }
 var fmt = function fmt(v) {
   return v == null ? "–" : v.toFixed(2);
@@ -1261,20 +1324,20 @@ function esc(s) {
 }
 function render(list) {
   list.sort(function (a, b) {
-    return new Date(a.t) - new Date(b.t);
+    return new Date(a.t) - new Date(b.t) || (a.lg < b.lg ? -1 : a.lg > b.lg ? 1 : 0);
   });
   if (!list.length) {
-    $("rows").innerHTML = '<div class="empty" tabindex="0">Tuần này giải chưa có trận nào.</div>';
+    $("rows").innerHTML = '<div class="empty" tabindex="0">' + (league === ALL ? "Trong 3 ngày tới chưa có trận nào." : "Giải này mấy ngày tới chưa có trận nào.") + '</div>';
     return;
   }
   var days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
   var html = "",
     lastDay = "";
-  var _iterator9 = _createForOfIteratorHelper(list),
-    _step9;
+  var _iterator5 = _createForOfIteratorHelper(list),
+    _step5;
   try {
-    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-      var m = _step9.value;
+    for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+      var m = _step5.value;
       var d = new Date(m.t),
         dayKey = d.toDateString();
       if (dayKey !== lastDay) {
@@ -1283,7 +1346,7 @@ function render(list) {
       }
       var live = m.state === "in";
       var score = m.state !== "pre" && m.hs != null ? m.hs + " - " + m.as : "";
-      var sub = live ? score + " · " + esc(m.detail) : m.state === "post" ? "Hết · " + score : esc(m.detail === "Scheduled" ? "" : m.detail);
+      var sub = live ? score + " · " + esc(m.detail) : m.state === "post" ? "Hết · " + score : esc(m.detail === "Scheduled" || /^\d/.test(m.detail) || /[AP]M/.test(m.detail) ? "" : m.detail);
       var fav = Math.min(m.o[0] == null ? 99 : m.o[0], m.o[2] == null ? 99 : m.o[2]);
       var p = m.open || [];
       var cells = "";
@@ -1293,69 +1356,61 @@ function render(list) {
       }
       var hw = m.state === "post" && +m.hs > +m.as,
         aw = m.state === "post" && +m.as > +m.hs;
-      html += '<div class="row" tabindex="0">' + '<div class="time' + (live ? " live" : "") + '">' + hhmm(d) + '<small>' + sub + '</small></div>' + '<div class="teams"><div class="' + (m.state === "pre" || hw ? "win" : "") + '">' + esc(m.home) + '</div><div class="' + (aw ? "win" : "") + '">' + esc(m.away) + '</div></div>' + cells + (m.line != null && m.line !== 2.5 && m.o[3] != null ? '<div class="lineinfo">Mốc Tài/Xỉu: ' + m.line + ' bàn</div>' : "") + '</div>';
+      var L = findLeague(m.lg);
+      html += '<div class="row" tabindex="0">' + '<div class="time' + (live ? " live" : "") + '">' + hhmm(d) + '<small>' + sub + '</small></div>' + '<div class="teams">' + (league === ALL && L ? '<div class="lg">' + esc(L[1]) + '</div>' : '') + '<div class="' + (m.state === "pre" || hw ? "win" : "") + '">' + esc(m.home) + '</div><div class="' + (aw ? "win" : "") + '">' + esc(m.away) + '</div></div>' + cells + (m.line != null && m.line !== 2.5 && m.o[3] != null ? '<div class="lineinfo">Mốc Tài/Xỉu: ' + m.line + ' bàn</div>' : "") + '</div>';
     }
   } catch (err) {
-    _iterator9.e(err);
+    _iterator5.e(err);
   } finally {
-    _iterator9.f();
+    _iterator5.f();
   }
   $("rows").innerHTML = html;
 }
 
-/* ---------- tab giải, cài đặt ---------- */
+/* ---------- tab giải ---------- */
 function drawTabs() {
-  var h = "";
-  for (var _i2 = 0, _LEAGUES2 = LEAGUES; _i2 < _LEAGUES2.length; _i2++) {
-    var l = _LEAGUES2[_i2];
-    h += '<button data-k="' + l[0] + '" class="' + (l[0] === league ? "on" : "") + '">' + l[2] + '</button>';
+  var h = '<button data-k="' + ALL + '" class="' + (league === ALL ? "on" : "") + '">Tất cả</button>';
+  var _iterator6 = _createForOfIteratorHelper(LEAGUES),
+    _step6;
+  try {
+    for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+      var l = _step6.value;
+      if (!bad[l[0]]) h += '<button data-k="' + l[0] + '" class="' + (l[0] === league ? "on" : "") + '">' + l[1] + '</button>';
+    }
+  } catch (err) {
+    _iterator6.e(err);
+  } finally {
+    _iterator6.f();
   }
+  var had = document.activeElement && document.activeElement.parentNode === $("tabs") ? document.activeElement.getAttribute("data-k") : null;
   $("tabs").innerHTML = h;
+  if (had) {
+    var b = $("tabs").querySelector('[data-k="' + had + '"]');
+    if (b) b.focus();
+  }
 }
 $("tabs").addEventListener("click", function (e) {
   var b = e.target;
   while (b && b.tagName !== "BUTTON") b = b.parentNode;
   if (!b || !b.getAttribute("data-k")) return;
   league = b.getAttribute("data-k");
-  ls.set("league", league);
+  ls.set("tab", league);
   drawTabs();
   var nb = $("tabs").querySelector('[data-k="' + league + '"]');
   if (nb) nb.focus();
-  var cached = ls.get("cache_" + league, null);
-  if (cached) render(cached);
-  refresh();
+  show();
+  var fresh = league === ALL ? false : data[league] && Date.now() - data[league].at < 120e3;
+  if (!fresh) refresh();
 });
-$("refresh").onclick = refresh;
-$("settings").onclick = function () {
-  $("modal").hidden = false;
-  $("key").value = apiKey;
-  $("saveKey").focus();
-};
-$("closeModal").onclick = closeModal;
-$("saveKey").onclick = function () {
-  apiKey = $("key").value.trim();
-  ls.set("key", apiKey);
-  closeModal();
-  refresh();
-};
-function closeModal() {
-  $("modal").hidden = true;
-  $("settings").focus();
-}
 window.onBack = function () {
-  if (!$("modal").hidden) {
-    closeModal();
-    return true;
-  }
   return false;
 };
 var cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
-$("ua").textContent = "Bảng Kèo " + (window.Android && window.Android.version ? window.Android.version() : "") + " · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/) || [])[1] || "?");
+$("ver").textContent = "Bản " + (window.Android && window.Android.version ? window.Android.version() : "web") + " · WebView " + (cm ? cm[1].split(".")[0] : "?");
 
-/* ---------- điều khiển bằng remote: mũi tên nhảy tới ô gần nhất ---------- */
+/* ---------- điều khiển bằng remote ---------- */
 function focusables() {
-  var scope = $("modal").hidden ? document : $("modal");
-  var all = scope.querySelectorAll("button, .row, .empty, input"),
+  var all = document.querySelectorAll("button, .row, .empty"),
     out = [];
   for (var i = 0; i < all.length; i++) if (all[i].offsetParent !== null) out.push(all[i]);
   return out;
@@ -1365,10 +1420,9 @@ document.addEventListener("keydown", function (e) {
     kc = e.keyCode;
   var dv = k === "ArrowUp" || kc === 38 ? [0, -1] : k === "ArrowDown" || kc === 40 ? [0, 1] : k === "ArrowLeft" || kc === 37 ? [-1, 0] : k === "ArrowRight" || kc === 39 ? [1, 0] : null;
   if (!dv) return;
-  var cur = document.activeElement;
-  if (cur && cur.tagName === "INPUT" && dv[1] === 0) return;
   e.preventDefault();
-  var list = focusables();
+  var cur = document.activeElement,
+    list = focusables();
   if (!cur || cur === document.body) {
     if (list[0]) list[0].focus();
     return;
@@ -1378,11 +1432,11 @@ document.addEventListener("keydown", function (e) {
     cy = r.top + r.height / 2;
   var best = null,
     bs = Infinity;
-  var _iterator0 = _createForOfIteratorHelper(list),
-    _step0;
+  var _iterator7 = _createForOfIteratorHelper(list),
+    _step7;
   try {
-    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-      var el = _step0.value;
+    for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+      var el = _step7.value;
       if (el === cur) continue;
       var b = el.getBoundingClientRect(),
         dx = b.left + b.width / 2 - cx,
@@ -1396,9 +1450,9 @@ document.addEventListener("keydown", function (e) {
       }
     }
   } catch (err) {
-    _iterator0.e(err);
+    _iterator7.e(err);
   } finally {
-    _iterator0.f();
+    _iterator7.f();
   }
   if (best) {
     best.focus();
@@ -1411,12 +1465,8 @@ function tick() {
 tick();
 setInterval(tick, 15000);
 drawTabs();
-var cached0 = ls.get("cache_" + league, null);
-if (cached0) render(cached0);
 refresh();
-setInterval(function () {
-  if ($("modal").hidden) refresh();
-}, 5 * 60e3);
+setInterval(refresh, 5 * 60e3); // tự cập nhật 5 phút một lần
 setTimeout(function () {
   var b = $("tabs").querySelector(".on");
   if (b) b.focus();

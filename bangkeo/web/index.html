@@ -26,7 +26,7 @@ h1 span{color:var(--accent)}
 .status{color:var(--muted);font-size:.75em;flex:1;min-width:0}
 .clock{font-size:1.6em;font-weight:700}
 .tabs{display:flex;flex-wrap:wrap}
-.tabs button{margin:0 10px 8px 0}
+.tabs button{margin:0 8px 8px 0;font-size:.72em;padding:8px 14px}
 button{font:inherit;font-size:.85em;font-weight:700;padding:10px 18px;border-radius:10px;border:3px solid var(--line);background:var(--panel);color:var(--fg);outline:none}
 button.on{background:var(--accent);color:#0d1612;border-color:var(--accent)}
 button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px rgba(255,210,63,.3)}
@@ -42,6 +42,8 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .teams{min-width:0;line-height:1.25}
 .teams div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .teams div.win{font-weight:800}
+.teams div.lg{color:var(--accent);font-size:.62em;font-weight:600;letter-spacing:.02em}
+.ver{float:right;margin-right:0!important;opacity:.7}
 .o{font-size:1.15em;font-weight:800}
 .o.fav{color:var(--focus)}
 .o .a{font-size:.6em;margin-left:2px}
@@ -53,15 +55,6 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .legend{color:var(--muted);font-size:.66em}
 .legend span{display:inline-block;margin-right:24px}
 .legend b{color:var(--fg)}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9}
-.box{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:28px;width:90%;max-width:900px}
-.box > *{margin:0 0 14px}
-.box > *:last-child{margin-bottom:0}
-.box p{color:var(--muted);font-size:.8em;line-height:1.5}
-.box input{display:block;width:100%;font:inherit;padding:12px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--fg);outline:none}
-.box input:focus{border-color:var(--focus)}
-.box button{margin-right:12px}
-.small{font-size:.65em!important;word-break:break-all}
 [hidden]{display:none!important}
 @media (max-width:700px){.head,.row{grid-template-columns:4.4em minmax(0,1fr) 3.4em 3.4em 3.4em}.head div:nth-child(n+6),.row .t{display:none}}
 </style>
@@ -71,8 +64,6 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
   <header>
     <h1>Bảng <span>Kèo</span></h1>
     <div class="status" id="status">Đang mở…</div>
-    <button id="refresh">⟳ Cập nhật</button>
-    <button id="settings">Cài đặt</button>
     <div class="clock" id="clock"></div>
   </header>
   <nav class="tabs" id="tabs"></nav>
@@ -84,18 +75,8 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
     <span><b>1</b> chủ nhà thắng · <b>X</b> hoà · <b>2</b> khách thắng</span>
     <span>Số <b style="color:#ffd23f">vàng</b> là đội được đánh giá mạnh hơn</span>
     <span><b style="color:#7fd99a">▲</b><b style="color:#ff7a6b">▼</b> tăng/giảm so với lúc mở kèo</span>
-    <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là chưa có tỷ lệ</span>
-  </div>
-</div>
-
-<div class="modal" id="modal" hidden>
-  <div class="box">
-    <h2>Cài đặt</h2>
-    <p>Bình thường app lấy tỷ lệ miễn phí từ ESPN, tự cập nhật 5 phút một lần, không cần làm gì.</p>
-    <p>Không bắt buộc: nếu có mã của the-odds-api.com, nhập vào đây để lấy tỷ lệ trung bình nhiều nhà cái. Để trống là dùng ESPN.</p>
-    <input id="key" placeholder="Mã the-odds-api.com (có thể để trống)" autocomplete="off" spellcheck="false">
-    <div><button id="saveKey">Lưu</button><button id="closeModal">Đóng</button></div>
-    <p class="small" id="ua"></p>
+    <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là nhà cái chưa mở tỷ lệ</span>
+    <span class="ver" id="ver"></span>
   </div>
 </div>
 
@@ -107,30 +88,47 @@ window.onerror = function(msg, src, line){
 };
 </script>
 <script>
-// [mã The Odds API, mã ESPN, tên]
+// [mã ESPN, tên đầy đủ, tên ngắn hiện trong bảng chung]
 const LEAGUES = [
-  ["soccer_epl","eng.1","Ngoại hạng Anh"],
-  ["soccer_spain_la_liga","esp.1","La Liga"],
-  ["soccer_italy_serie_a","ita.1","Serie A"],
-  ["soccer_germany_bundesliga","ger.1","Bundesliga"],
-  ["soccer_france_ligue_one","fra.1","Ligue 1"],
-  ["soccer_uefa_champs_league","uefa.champions","Cúp C1"],
-  ["soccer_uefa_europa_league","uefa.europa","Cúp C2"],
+  ["eng.1","Ngoại hạng Anh","Anh"],
+  ["esp.1","La Liga","TBN"],
+  ["ita.1","Serie A","Ý"],
+  ["ger.1","Bundesliga","Đức"],
+  ["fra.1","Ligue 1","Pháp"],
+  ["uefa.champions","Cúp C1","C1"],
+  ["uefa.europa","Cúp C2","C2"],
+  ["uefa.europa.conf","Cúp C3","C3"],
+  ["eng.2","Hạng nhất Anh","Anh 2"],
+  ["ned.1","Hà Lan","Hà Lan"],
+  ["por.1","Bồ Đào Nha","BĐN"],
+  ["tur.1","Thổ Nhĩ Kỳ","Thổ"],
+  ["sco.1","Scotland","Scot"],
+  ["bel.1","Bỉ","Bỉ"],
+  ["kor.1","Hàn Quốc","Hàn"],
+  ["jpn.1","Nhật Bản","Nhật"],
+  ["chn.1","Trung Quốc","Trung"],
+  ["aus.1","Úc","Úc"],
+  ["ksa.1","Ả Rập Xê Út","Ả Rập"],
+  ["usa.1","Mỹ MLS","Mỹ"],
+  ["mex.1","Mexico","Mexico"],
+  ["bra.1","Brazil","Brazil"],
+  ["arg.1","Argentina","Arg"],
 ];
+const ALL = "all";
 const ls = {
   get(k,d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
 const $ = id => document.getElementById(id);
 const findLeague = k => { for(const l of LEAGUES) if(l[0]===k) return l; return null; };
-let league = ls.get("league", LEAGUES[0][0]);
-if(!findLeague(league)) league = LEAGUES[0][0];
-let apiKey = ls.get("key", "");
-let remaining = ls.get("remaining", "");
+let bad = ls.get("bad2", {});            // giải ESPN không có -> ẩn tab
+let league = ls.get("tab", ALL);
+if(league!==ALL && (!findLeague(league) || bad[league])) league = ALL;
 const pad2 = n => (n<10?"0":"")+n;
 const hhmm = d => pad2(d.getHours())+":"+pad2(d.getMinutes());
+function ymd(d){ return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
 
-/* ---------- gọi mạng qua Android (không bị chặn CORS) ---------- */
+/* ---------- gọi mạng qua Android ---------- */
 const cbs = {}; let cbn = 0;
 window.__cb = (id, json) => { const f = cbs[id]; delete cbs[id]; if(f) f(JSON.parse(json)); };
 function httpGet(url){
@@ -139,14 +137,14 @@ function httpGet(url){
     else {
       const x = new XMLHttpRequest();
       x.open("GET", url); x.timeout = 20000;
-      x.onload = () => res({status:x.status, body:x.responseText, remaining:x.getResponseHeader("x-requests-remaining")||""});
+      x.onload = () => res({status:x.status, body:x.responseText});
       x.onerror = x.ontimeout = () => res({status:0, body:""});
       x.send();
     }
   });
 }
 
-/* ---------- ESPN ---------- */
+/* ---------- đọc dữ liệu ESPN ---------- */
 function am2dec(v){
   if(v==null || v==="") return null;
   if(v==="EVEN" || v==="EV") return 2;
@@ -156,7 +154,7 @@ function am2dec(v){
 }
 function pick(){ for(let i=0;i<arguments.length;i++){ const v = arguments[i]; if(v!=null && v!=="") return v; } return null; }
 const g = (o, path) => { let x = o; for(const k of path){ if(x==null) return null; x = x[k]; } return x; };
-function espnEvent(ev){
+function espnEvent(ev, lg){
   const c = (ev.competitions||[])[0] || {};
   let home = {}, away = {};
   for(const t of c.competitors||[]){ if(t.homeAway==="home") home = t; else away = t; }
@@ -178,64 +176,79 @@ function espnEvent(ev){
   let line = od.overUnder;
   if(line==null){ const s = g(tot,["over","close","line"]); if(s) line = parseFloat(String(s).replace(/[a-z]/ig,"")); }
   const VI = {"FT":"Hết","HT":"Nghỉ giữa giờ","Postponed":"Hoãn","Canceled":"Huỷ","AET":"Hết hiệp phụ","FT-Pens":"Hết luân lưu"};
-  return {id:ev.id, t:ev.date, home:g(home,["team","displayName"])||"?", away:g(away,["team","displayName"])||"?",
+  return {id:ev.id, t:ev.date, lg:lg, home:g(home,["team","displayName"])||"?", away:g(away,["team","displayName"])||"?",
           o:o, open:open, line:line, state:st.state||"pre", detail:VI[st.shortDetail]||st.shortDetail||"",
           hs: home.score, as: away.score};
 }
-function ymd(d){ return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
 
-/* ---------- The Odds API (không bắt buộc) ---------- */
-function avg(a){ if(!a.length) return null; let s=0; for(const x of a) s+=x; return s/a.length; }
-function summarize(ev){
-  const h=[], d=[], a=[], ov=[], un=[];
-  for(const b of ev.bookmakers||[]) for(const m of b.markets||[]){
-    if(m.key==="h2h") for(const o of m.outcomes){ if(o.name===ev.home_team) h.push(o.price); else if(o.name===ev.away_team) a.push(o.price); else d.push(o.price); }
-    if(m.key==="totals") for(const o of m.outcomes){ if(o.point===2.5) (o.name==="Over"?ov:un).push(o.price); }
+/* ---------- tải một giải ---------- */
+const BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer/";
+const data = {};          // slug -> {list, at}
+async function loadLeague(slug, extraDays){
+  const reqs = [httpGet(BASE + slug + "/scoreboard")];
+  for(let k=1;k<=extraDays;k++) reqs.push(httpGet(BASE + slug + "/scoreboard?dates=" + ymd(new Date(Date.now()+k*86400e3))));
+  const rs = await Promise.all(reqs);
+  if(rs[0].status===400 || rs[0].status===404){ bad[slug] = 1; ls.set("bad2", bad); return {status:rs[0].status}; }
+  if(!rs.some(r => r.status===200)) return {status:rs[0].status};
+  const seen = {}, list = [];
+  for(const r of rs){
+    if(r.status!==200) continue;
+    try{ for(const ev of JSON.parse(r.body).events||[]){ if(!seen[ev.id]){ seen[ev.id] = 1; list.push(espnEvent(ev, slug)); } } }catch(e){}
   }
-  return {id:ev.id, t:ev.commence_time, home:ev.home_team, away:ev.away_team, o:[avg(h),avg(d),avg(a),avg(ov),avg(un)], open:[], line:2.5, state:"pre", detail:(ev.bookmakers||[]).length+" nhà cái"};
+  data[slug] = {list:list, at:Date.now()};
+  return {status:200};
+}
+async function pool(items, n, fn){
+  let i = 0;
+  async function worker(){ while(i < items.length){ const it = items[i++]; await fn(it); } }
+  const ws = []; for(let k=0;k<n;k++) ws.push(worker());
+  await Promise.all(ws);
 }
 
-let busy = false;
+let busy = false, lastAll = 0;
 async function refresh(){
   if(busy) return; busy = true;
   try{
-    const L = findLeague(league), name = L[2];
-    $("status").textContent = "Đang tải " + name + "…";
-    let list = null, err = "", used = "";
-    if(apiKey){
-      const r = await httpGet("https://api.the-odds-api.com/v4/sports/"+L[0]+"/odds/?regions=eu&markets=h2h,totals&oddsFormat=decimal&apiKey="+encodeURIComponent(apiKey));
-      if(r.status===200){ try{ list = JSON.parse(r.body).map(summarize); used = "The Odds API"; if(r.remaining){ remaining = r.remaining; ls.set("remaining", remaining); } }catch(e){} }
-      else err = r.status===401 ? "Mã the-odds-api sai, đã dùng ESPN. " : r.status===429 ? "Hết lượt the-odds-api, đã dùng ESPN. " : "";
-    }
-    if(!list){
-      // Địa chỉ chính: đúng như đã thử thành công trên mạng FPT (không thêm tham số)
-      const base = "https://site.api.espn.com/apis/site/v2/sports/soccer/"+L[1]+"/scoreboard";
-      const reqs = [httpGet(base)];
-      // Lấy thêm từng ngày tới (nếu ESPN không nhận thì bỏ qua)
-      for(let k=1;k<=3;k++) reqs.push(httpGet(base+"?dates="+ymd(new Date(Date.now()+k*86400e3))));
-      const rs = await Promise.all(reqs);
-      const seen = {}, merged = [];
-      rs.forEach((r, i) => {
-        if(r.status!==200){ if(i===0) err += r.status===0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + "."; return; }
-        try{ for(const ev of JSON.parse(r.body).events||[]){ if(!seen[ev.id]){ seen[ev.id] = 1; merged.push(espnEvent(ev)); } } }
-        catch(e){ if(i===0) err += "ESPN trả dữ liệu lạ."; }
-      });
-      if(rs.some(r => r.status===200)){ list = merged; used = "ESPN"; if(rs[0].status===200) err = err.replace(/ESPN.*$/, ""); }
-    }
-    if(list){
-      render(list);
-      ls.set("cache_"+league, list);
-      $("status").textContent = err + name + " · " + used + " · cập nhật " + hhmm(new Date()) + (used==="The Odds API" && remaining ? " · còn " + remaining + " lượt" : "");
+    if(league===ALL){
+      const slugs = LEAGUES.filter(l => !bad[l[0]]).map(l => l[0]);
+      $("status").textContent = "Đang tải tất cả các giải…";
+      let ok = 0, fail = 0, lastErr = 0;
+      await pool(slugs, 6, async slug => { const r = await loadLeague(slug, 0); if(r.status===200) ok++; else { fail++; lastErr = r.status; } });
+      drawTabs();
+      if(ok){ lastAll = Date.now(); show(); $("status").textContent = "Tất cả giải · ESPN · cập nhật " + hhmm(new Date()); }
+      else $("status").textContent = "Không tải được: " + (lastErr===0 ? "không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + lastErr + ".");
     } else {
-      const cached = ls.get("cache_"+league, null);
-      if(cached) render(cached);
-      else $("rows").innerHTML = '<div class="empty" tabindex="0">Không tải được dữ liệu.<br>' + esc(err) + '<br>Kiểm tra mạng rồi bấm Cập nhật.</div>';
-      $("status").textContent = "Không tải được: " + err + (cached ? " Đang hiện dữ liệu lần trước." : "");
+      const L = findLeague(league);
+      $("status").textContent = "Đang tải " + L[1] + "…";
+      const r = await loadLeague(league, 3);
+      if(r.status===200){ show(); $("status").textContent = L[1] + " · ESPN · cập nhật " + hhmm(new Date()); }
+      else {
+        if(bad[league]){ league = ALL; ls.set("tab", ALL); drawTabs(); busy = false; return refresh(); }
+        $("status").textContent = "Không tải được: " + (r.status===0 ? "không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + ".") + (data[league] ? " Đang hiện dữ liệu lần trước." : "");
+      }
     }
   } finally { busy = false; }
 }
 
 /* ---------- vẽ bảng ---------- */
+function show(){
+  let list = [];
+  if(league===ALL){
+    const from = Date.now() - 3*3600e3, to = Date.now() + 3*86400e3;
+    for(const slug in data){
+      if(bad[slug]) continue;
+      for(const m of data[slug].list){
+        const t = new Date(m.t).getTime();
+        if(m.state==="in" || (t >= from && t <= to)) list.push(m);
+      }
+    }
+  } else if(data[league]) list = data[league].list.slice();
+  render(list);
+  if(!busy){
+    const L = findLeague(league), at = league===ALL ? lastAll : (data[league] ? data[league].at : 0);
+    if(at) $("status").textContent = (league===ALL ? "Tất cả giải" : L[1]) + " · ESPN · cập nhật " + hhmm(new Date(at));
+  }
+}
 const fmt = v => v==null ? "–" : v.toFixed(2);
 function arrow(now, before){
   if(now==null || before==null) return "";
@@ -245,8 +258,8 @@ function arrow(now, before){
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]); }
 function render(list){
-  list.sort((a,b) => new Date(a.t) - new Date(b.t));
-  if(!list.length){ $("rows").innerHTML = '<div class="empty" tabindex="0">Tuần này giải chưa có trận nào.</div>'; return; }
+  list.sort((a,b) => (new Date(a.t) - new Date(b.t)) || (a.lg < b.lg ? -1 : a.lg > b.lg ? 1 : 0));
+  if(!list.length){ $("rows").innerHTML = '<div class="empty" tabindex="0">' + (league===ALL ? "Trong 3 ngày tới chưa có trận nào." : "Giải này mấy ngày tới chưa có trận nào.") + '</div>'; return; }
   const days = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
   let html = "", lastDay = "";
   for(const m of list){
@@ -254,7 +267,7 @@ function render(list){
     if(dayKey !== lastDay){ lastDay = dayKey; html += '<div class="day">' + days[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1) + '</div>'; }
     const live = m.state==="in";
     const score = (m.state!=="pre" && m.hs!=null) ? m.hs + " - " + m.as : "";
-    const sub = live ? (score + " · " + esc(m.detail)) : m.state==="post" ? ("Hết · " + score) : esc(m.detail==="Scheduled" ? "" : m.detail);
+    const sub = live ? (score + " · " + esc(m.detail)) : m.state==="post" ? ("Hết · " + score) : esc(m.detail==="Scheduled" || /^\d/.test(m.detail) || /[AP]M/.test(m.detail) ? "" : m.detail);
     const fav = Math.min(m.o[0]==null?99:m.o[0], m.o[2]==null?99:m.o[2]);
     const p = m.open || [];
     let cells = "";
@@ -263,9 +276,11 @@ function render(list){
       cells += '<div class="o' + (i>2?" t":"") + (v==null?" na":"") + (i!==1 && i<3 && v===fav ? " fav":"") + '">' + fmt(v) + arrow(v, p[i]) + '</div>';
     }
     const hw = m.state==="post" && +m.hs > +m.as, aw = m.state==="post" && +m.as > +m.hs;
+    const L = findLeague(m.lg);
     html += '<div class="row" tabindex="0">' +
       '<div class="time' + (live?" live":"") + '">' + hhmm(d) + '<small>' + sub + '</small></div>' +
-      '<div class="teams"><div class="' + (m.state==="pre"||hw?"win":"") + '">' + esc(m.home) + '</div><div class="' + (aw?"win":"") + '">' + esc(m.away) + '</div></div>' +
+      '<div class="teams">' + (league===ALL && L ? '<div class="lg">' + esc(L[1]) + '</div>' : '') +
+        '<div class="' + (m.state==="pre"||hw?"win":"") + '">' + esc(m.home) + '</div><div class="' + (aw?"win":"") + '">' + esc(m.away) + '</div></div>' +
       cells +
       (m.line!=null && m.line!==2.5 && m.o[3]!=null ? '<div class="lineinfo">Mốc Tài/Xỉu: ' + m.line + ' bàn</div>' : "") +
       '</div>';
@@ -273,33 +288,30 @@ function render(list){
   $("rows").innerHTML = html;
 }
 
-/* ---------- tab giải, cài đặt ---------- */
+/* ---------- tab giải ---------- */
 function drawTabs(){
-  let h = "";
-  for(const l of LEAGUES) h += '<button data-k="' + l[0] + '" class="' + (l[0]===league?"on":"") + '">' + l[2] + '</button>';
+  let h = '<button data-k="' + ALL + '" class="' + (league===ALL?"on":"") + '">Tất cả</button>';
+  for(const l of LEAGUES) if(!bad[l[0]]) h += '<button data-k="' + l[0] + '" class="' + (l[0]===league?"on":"") + '">' + l[1] + '</button>';
+  const had = document.activeElement && document.activeElement.parentNode === $("tabs") ? document.activeElement.getAttribute("data-k") : null;
   $("tabs").innerHTML = h;
+  if(had){ const b = $("tabs").querySelector('[data-k="' + had + '"]'); if(b) b.focus(); }
 }
 $("tabs").addEventListener("click", e => {
   let b = e.target; while(b && b.tagName!=="BUTTON") b = b.parentNode;
   if(!b || !b.getAttribute("data-k")) return;
-  league = b.getAttribute("data-k"); ls.set("league", league); drawTabs();
+  league = b.getAttribute("data-k"); ls.set("tab", league); drawTabs();
   const nb = $("tabs").querySelector('[data-k="' + league + '"]'); if(nb) nb.focus();
-  const cached = ls.get("cache_"+league, null); if(cached) render(cached);
-  refresh();
+  show();
+  const fresh = league===ALL ? false : (data[league] && Date.now() - data[league].at < 120e3);
+  if(!fresh) refresh();
 });
-$("refresh").onclick = refresh;
-$("settings").onclick = () => { $("modal").hidden = false; $("key").value = apiKey; $("saveKey").focus(); };
-$("closeModal").onclick = closeModal;
-$("saveKey").onclick = () => { apiKey = $("key").value.trim(); ls.set("key", apiKey); closeModal(); refresh(); };
-function closeModal(){ $("modal").hidden = true; $("settings").focus(); }
-window.onBack = () => { if(!$("modal").hidden){ closeModal(); return true; } return false; };
+window.onBack = () => false;
 const cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
-$("ua").textContent = "Bảng Kèo " + (window.Android && window.Android.version ? window.Android.version() : "") + " · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/)||[])[1] || "?");
+$("ver").textContent = "Bản " + (window.Android && window.Android.version ? window.Android.version() : "web") + " · WebView " + (cm ? cm[1].split(".")[0] : "?");
 
-/* ---------- điều khiển bằng remote: mũi tên nhảy tới ô gần nhất ---------- */
+/* ---------- điều khiển bằng remote ---------- */
 function focusables(){
-  const scope = $("modal").hidden ? document : $("modal");
-  const all = scope.querySelectorAll("button, .row, .empty, input"), out = [];
+  const all = document.querySelectorAll("button, .row, .empty"), out = [];
   for(let i=0;i<all.length;i++) if(all[i].offsetParent !== null) out.push(all[i]);
   return out;
 }
@@ -307,10 +319,8 @@ document.addEventListener("keydown", e => {
   const k = e.key || "", kc = e.keyCode;
   const dv = (k==="ArrowUp"||kc===38) ? [0,-1] : (k==="ArrowDown"||kc===40) ? [0,1] : (k==="ArrowLeft"||kc===37) ? [-1,0] : (k==="ArrowRight"||kc===39) ? [1,0] : null;
   if(!dv) return;
-  const cur = document.activeElement;
-  if(cur && cur.tagName==="INPUT" && dv[1]===0) return;
   e.preventDefault();
-  const list = focusables();
+  const cur = document.activeElement, list = focusables();
   if(!cur || cur===document.body){ if(list[0]) list[0].focus(); return; }
   const r = cur.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
   let best = null, bs = Infinity;
@@ -328,10 +338,8 @@ document.addEventListener("keydown", e => {
 function tick(){ $("clock").textContent = hhmm(new Date()); }
 tick(); setInterval(tick, 15000);
 drawTabs();
-const cached0 = ls.get("cache_"+league, null);
-if(cached0) render(cached0);
 refresh();
-setInterval(() => { if($("modal").hidden) refresh(); }, 5*60e3);
+setInterval(refresh, 5*60e3);   // tự cập nhật 5 phút một lần
 setTimeout(() => { const b = $("tabs").querySelector(".on"); if(b) b.focus(); }, 150);
 </script>
 </body>
