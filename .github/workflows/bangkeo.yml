@@ -1,7 +1,10 @@
 name: Build APK
 on:
   push:
+    paths: ['bangkeo/**', '.github/workflows/bangkeo.yml']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,3 +19,11 @@ jobs:
       - run: cp bangkeo/app/build/outputs/apk/debug/app-debug.apk BangKeo.apk
       - uses: actions/upload-artifact@v4
         with: { name: BangKeo-apk, path: BangKeo.apk }
+      - name: Save APK into repo
+        run: |
+          mkdir -p apk && cp BangKeo.apk apk/BangKeo.apk
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add apk/BangKeo.apk
+          git commit -m "Build BangKeo.apk [skip ci]" || echo "no change"
+          git push
