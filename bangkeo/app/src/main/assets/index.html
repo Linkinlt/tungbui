@@ -1140,7 +1140,7 @@ function refresh() {
 /* ---------- vẽ bảng ---------- */
 function _refresh() {
   _refresh = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-    var L, name, list, err, used, r, a, b, _r, cached;
+    var L, name, list, err, used, r, base, reqs, k, rs, seen, merged, cached;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
@@ -1178,19 +1178,47 @@ function _refresh() {
             _context.n = 6;
             break;
           }
-          a = new Date(Date.now() - 86400e3), b = new Date(Date.now() + 7 * 86400e3);
+          // Địa chỉ chính: đúng như đã thử thành công trên mạng FPT (không thêm tham số)
+          base = "https://site.api.espn.com/apis/site/v2/sports/soccer/" + L[1] + "/scoreboard";
+          reqs = [httpGet(base)]; // Lấy thêm từng ngày tới (nếu ESPN không nhận thì bỏ qua)
+          for (k = 1; k <= 3; k++) reqs.push(httpGet(base + "?dates=" + ymd(new Date(Date.now() + k * 86400e3))));
           _context.n = 5;
-          return httpGet("https://site.api.espn.com/apis/site/v2/sports/soccer/" + L[1] + "/scoreboard?limit=100&dates=" + ymd(a) + "-" + ymd(b));
+          return Promise.all(reqs);
         case 5:
-          _r = _context.v;
-          if (_r.status === 200) {
-            try {
-              list = (JSON.parse(_r.body).events || []).map(espnEvent);
-              used = "ESPN";
-            } catch (e) {
-              err += "ESPN trả dữ liệu lạ.";
+          rs = _context.v;
+          seen = {}, merged = [];
+          rs.forEach(function (r, i) {
+            if (r.status !== 200) {
+              if (i === 0) err += r.status === 0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + ".";
+              return;
             }
-          } else err += _r.status === 0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + _r.status + ".";
+            try {
+              var _iterator1 = _createForOfIteratorHelper(JSON.parse(r.body).events || []),
+                _step1;
+              try {
+                for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+                  var ev = _step1.value;
+                  if (!seen[ev.id]) {
+                    seen[ev.id] = 1;
+                    merged.push(espnEvent(ev));
+                  }
+                }
+              } catch (err) {
+                _iterator1.e(err);
+              } finally {
+                _iterator1.f();
+              }
+            } catch (e) {
+              if (i === 0) err += "ESPN trả dữ liệu lạ.";
+            }
+          });
+          if (rs.some(function (r) {
+            return r.status === 200;
+          })) {
+            list = merged;
+            used = "ESPN";
+            if (rs[0].status === 200) err = err.replace(/ESPN.*$/, "");
+          }
         case 6:
           if (list) {
             render(list);
@@ -1322,7 +1350,7 @@ window.onBack = function () {
   return false;
 };
 var cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
-$("ua").textContent = "Bảng Kèo 1.2 · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/) || [])[1] || "?");
+$("ua").textContent = "Bảng Kèo " + (window.Android && window.Android.version ? window.Android.version() : "") + " · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/) || [])[1] || "?");
 
 /* ---------- điều khiển bằng remote: mũi tên nhảy tới ô gần nhất ---------- */
 function focusables() {

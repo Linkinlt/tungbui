@@ -208,10 +208,19 @@ async function refresh(){
       else err = r.status===401 ? "Mã the-odds-api sai, đã dùng ESPN. " : r.status===429 ? "Hết lượt the-odds-api, đã dùng ESPN. " : "";
     }
     if(!list){
-      const a = new Date(Date.now()-86400e3), b = new Date(Date.now()+7*86400e3);
-      const r = await httpGet("https://site.api.espn.com/apis/site/v2/sports/soccer/"+L[1]+"/scoreboard?limit=100&dates="+ymd(a)+"-"+ymd(b));
-      if(r.status===200){ try{ list = (JSON.parse(r.body).events||[]).map(espnEvent); used = "ESPN"; }catch(e){ err += "ESPN trả dữ liệu lạ."; } }
-      else err += r.status===0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + ".";
+      // Địa chỉ chính: đúng như đã thử thành công trên mạng FPT (không thêm tham số)
+      const base = "https://site.api.espn.com/apis/site/v2/sports/soccer/"+L[1]+"/scoreboard";
+      const reqs = [httpGet(base)];
+      // Lấy thêm từng ngày tới (nếu ESPN không nhận thì bỏ qua)
+      for(let k=1;k<=3;k++) reqs.push(httpGet(base+"?dates="+ymd(new Date(Date.now()+k*86400e3))));
+      const rs = await Promise.all(reqs);
+      const seen = {}, merged = [];
+      rs.forEach((r, i) => {
+        if(r.status!==200){ if(i===0) err += r.status===0 ? "Không có mạng hoặc không kết nối được ESPN." : "ESPN báo lỗi " + r.status + "."; return; }
+        try{ for(const ev of JSON.parse(r.body).events||[]){ if(!seen[ev.id]){ seen[ev.id] = 1; merged.push(espnEvent(ev)); } } }
+        catch(e){ if(i===0) err += "ESPN trả dữ liệu lạ."; }
+      });
+      if(rs.some(r => r.status===200)){ list = merged; used = "ESPN"; if(rs[0].status===200) err = err.replace(/ESPN.*$/, ""); }
     }
     if(list){
       render(list);
@@ -285,7 +294,7 @@ $("saveKey").onclick = () => { apiKey = $("key").value.trim(); ls.set("key", api
 function closeModal(){ $("modal").hidden = true; $("settings").focus(); }
 window.onBack = () => { if(!$("modal").hidden){ closeModal(); return true; } return false; };
 const cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
-$("ua").textContent = "Bảng Kèo 1.2 · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/)||[])[1] || "?");
+$("ua").textContent = "Bảng Kèo " + (window.Android && window.Android.version ? window.Android.version() : "") + " · WebView " + (cm ? cm[1] : "không rõ") + " · Android " + ((navigator.userAgent.match(/Android ([\d.]+)/)||[])[1] || "?");
 
 /* ---------- điều khiển bằng remote: mũi tên nhảy tới ô gần nhất ---------- */
 function focusables(){

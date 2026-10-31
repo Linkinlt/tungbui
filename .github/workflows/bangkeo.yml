@@ -14,9 +14,9 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.9' }
-      - run: gradle assembleDebug --no-daemon
+      - run: gradle assembleRelease --no-daemon
         working-directory: bangkeo
-      - run: cp bangkeo/app/build/outputs/apk/debug/app-debug.apk BangKeo.apk
+      - run: cp bangkeo/app/build/outputs/apk/release/app-release.apk BangKeo.apk
       - uses: actions/upload-artifact@v4
         with: { name: BangKeo-apk, path: BangKeo.apk }
       - name: Save APK into repo

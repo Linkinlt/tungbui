@@ -1,4 +1,8 @@
 plugins { id 'com.android.application' }
+
+// Số phiên bản tự tăng theo lần build trên GitHub, để cài đè không phải gỡ bản cũ
+def runNo = (System.getenv('GITHUB_RUN_NUMBER') ?: '0').toInteger()
+
 android {
     namespace 'vn.bangkeo'
     compileSdk 34
@@ -6,8 +10,21 @@ android {
         applicationId 'vn.bangkeo'
         minSdk 21
         targetSdk 34
-        versionCode 3
-        versionName '1.2'
+        versionCode 100 + runNo
+        versionName "1.${runNo}"
+    }
+    // Một chữ ký cố định cho mọi bản build
+    signingConfigs {
+        bangkeo {
+            storeFile file('bangkeo.jks')
+            storePassword 'bangkeo123'
+            keyAlias 'bangkeo'
+            keyPassword 'bangkeo123'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.bangkeo }
+        release { signingConfig signingConfigs.bangkeo; minifyEnabled false }
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
 }
