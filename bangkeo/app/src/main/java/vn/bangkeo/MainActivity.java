@@ -47,6 +47,9 @@ public class MainActivity extends Activity {
 
     class Bridge {
         @JavascriptInterface
+        public void exit() { ui.post(() -> finish()); }
+
+        @JavascriptInterface
         public String version() {
             try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { return ""; }
         }

@@ -25,13 +25,14 @@ h1{margin:0;font-size:1.5em;font-weight:900;white-space:nowrap}
 h1 span{color:var(--accent)}
 .status{color:var(--muted);font-size:.75em;flex:1;min-width:0}
 .clock{font-size:1.6em;font-weight:700}
-.tabs{display:flex;flex-wrap:wrap}
-.tabs button{margin:0 8px 8px 0;font-size:.72em;padding:8px 14px}
+.tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:4px 4px 2px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;margin:0 8px 4px 0;font-size:.72em;padding:8px 14px}
 button{font:inherit;font-size:.85em;font-weight:700;padding:10px 18px;border-radius:10px;border:3px solid var(--line);background:var(--panel);color:var(--fg);outline:none}
 button.on{background:var(--accent);color:#0d1612;border-color:var(--accent)}
 button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-shadow:0 0 0 4px rgba(255,210,63,.3)}
 .tablewrap{flex:1;overflow-y:auto;border:2px solid var(--line);border-radius:12px;min-height:0}
-.head,.row{display:grid;grid-template-columns:5.6em minmax(0,1fr) 4.4em 4.4em 4.4em 4.8em 4.8em;align-items:center;grid-column-gap:8px;padding:10px 16px}
+.head,.row{display:grid;grid-template-columns:5.6em minmax(0,1fr) 4.4em 4.4em 4.4em 4.8em 4.8em;align-items:center;grid-column-gap:8px;padding:6px 16px}
 .head{position:-webkit-sticky;position:sticky;top:0;background:var(--panel);color:var(--muted);font-size:.72em;text-transform:uppercase;letter-spacing:.06em;z-index:2;border-bottom:2px solid var(--line)}
 .head div:nth-child(n+3),.row .o{text-align:center}
 .row{border:3px solid transparent;border-bottom:1px solid var(--line);outline:none}
@@ -39,7 +40,7 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .time small{display:block;color:var(--muted);font-weight:400;font-size:.68em;white-space:nowrap}
 .time.live{color:var(--down)}
 .time.live small{color:var(--down)}
-.teams{min-width:0;line-height:1.25}
+.teams{min-width:0;line-height:1.18}
 .teams div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .teams div.win{font-weight:800}
 .teams div.lg{color:var(--accent);font-size:.62em;font-weight:600;letter-spacing:.02em}
@@ -50,13 +51,32 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
 .o .a.up{color:var(--up)} .o .a.down{color:var(--down)}
 .o.na{color:var(--line)}
 .lineinfo{grid-column:2 / 8;color:var(--muted);font-size:.65em}
-.day{padding:8px 16px;background:var(--bg);color:var(--accent);font-weight:700;font-size:.8em;border-bottom:1px solid var(--line)}
+.day{padding:5px 16px;background:var(--bg);color:var(--accent);font-weight:700;font-size:.8em;border-bottom:1px solid var(--line)}
 .empty{padding:40px;text-align:center;color:var(--muted);border:3px solid transparent;outline:none;line-height:1.6}
 .legend{color:var(--muted);font-size:.66em}
 .legend span{display:inline-block;margin-right:24px}
 .legend b{color:var(--fg)}
 [hidden]{display:none!important}
-@media (max-width:700px){.head,.row{grid-template-columns:4.4em minmax(0,1fr) 3.4em 3.4em 3.4em}.head div:nth-child(n+6),.row .t{display:none}}
+.ou{display:none}
+.ask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9}
+.askbox{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:28px 32px;text-align:center;width:90%;max-width:560px}
+.askbox h2{margin:0 0 20px;font-size:1.3em}
+.askbox button{margin:0 8px;font-size:1em;padding:12px 28px}
+.tablewrap{-webkit-overflow-scrolling:touch}
+@media (max-width:700px){
+  .app{padding:10px 10px}
+  h1{font-size:1.3em}
+  .clock{font-size:1.3em}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .tabs button{flex:0 0 auto;font-size:.85em}
+  .head,.row{grid-template-columns:3.9em minmax(0,1fr) 3.2em 3.2em 3.2em;grid-column-gap:4px;padding:8px 8px}
+  .head div:nth-child(n+6),.row .t{display:none}
+  .o{font-size:1.05em}
+  .ou{display:block;grid-column:2 / 6;color:var(--muted);font-size:.78em;margin-top:2px}
+  .ou b{color:var(--fg)}
+  .lineinfo{display:none}
+  .legend span{display:block;margin:0 0 2px}
+}
 </style>
 </head>
 <body>
@@ -77,6 +97,13 @@ button:focus,.row:focus,.empty:focus{border-color:var(--focus)!important;box-sha
     <span><b style="color:#7fd99a">▲</b><b style="color:#ff7a6b">▼</b> tăng/giảm so với lúc mở kèo</span>
     <span>Tài/Xỉu mốc 2.5 bàn nếu không ghi khác · "–" là nhà cái chưa mở tỷ lệ</span>
     <span class="ver" id="ver"></span>
+  </div>
+</div>
+
+<div class="ask" id="ask" hidden>
+  <div class="askbox">
+    <h2>Thoát app?</h2>
+    <button id="stay">Ở lại</button><button id="quit">Thoát</button>
   </div>
 </div>
 
@@ -282,6 +309,7 @@ function render(list){
       '<div class="teams">' + (league===ALL && L ? '<div class="lg">' + esc(L[1]) + '</div>' : '') +
         '<div class="' + (m.state==="pre"||hw?"win":"") + '">' + esc(m.home) + '</div><div class="' + (aw?"win":"") + '">' + esc(m.away) + '</div></div>' +
       cells +
+      (m.o[3]!=null || m.o[4]!=null ? '<div class="ou">Tài ' + (m.line!=null?m.line:2.5) + ': <b>' + fmt(m.o[3]) + '</b> · Xỉu: <b>' + fmt(m.o[4]) + '</b></div>' : '') +
       (m.line!=null && m.line!==2.5 && m.o[3]!=null ? '<div class="lineinfo">Mốc Tài/Xỉu: ' + m.line + ' bàn</div>' : "") +
       '</div>';
   }
@@ -305,13 +333,25 @@ $("tabs").addEventListener("click", e => {
   const fresh = league===ALL ? false : (data[league] && Date.now() - data[league].at < 120e3);
   if(!fresh) refresh();
 });
-window.onBack = () => false;
+/* Nút Quay lại: lần 1 về đầu bảng, lần 2 hỏi thoát */
+function focusTab(){ const b = $("tabs").querySelector(".on") || $("tabs").querySelector("button"); if(b) b.focus(); }
+function closeAsk(){ $("ask").hidden = true; focusTab(); }
+$("stay").onclick = closeAsk;
+$("quit").onclick = () => { if(window.Android && window.Android.exit) window.Android.exit(); else closeAsk(); };
+window.onBack = () => {
+  if(!$("ask").hidden){ closeAsk(); return true; }
+  const cur = document.activeElement;
+  const onTabs = cur && cur.parentNode === $("tabs");
+  if(!onTabs || $("wrap").scrollTop > 0){ $("wrap").scrollTop = 0; focusTab(); return true; }
+  $("ask").hidden = false; $("stay").focus(); return true;
+};
 const cm = navigator.userAgent.match(/Chrome\/([\d.]+)/);
 $("ver").textContent = "Bản " + (window.Android && window.Android.version ? window.Android.version() : "web") + " · WebView " + (cm ? cm[1].split(".")[0] : "?");
 
 /* ---------- điều khiển bằng remote ---------- */
 function focusables(){
-  const all = document.querySelectorAll("button, .row, .empty"), out = [];
+  const scope = $("ask").hidden ? document : $("ask");
+  const all = scope.querySelectorAll("button, .row, .empty"), out = [];
   for(let i=0;i<all.length;i++) if(all[i].offsetParent !== null) out.push(all[i]);
   return out;
 }
@@ -332,7 +372,11 @@ document.addEventListener("keydown", e => {
     const s = along + (dv[0] ? Math.abs(dy) : Math.abs(dx)) * 2.5;
     if(s < bs){ bs = s; best = el; }
   }
-  if(best){ best.focus(); if(best.scrollIntoView) best.scrollIntoView(false); }
+  if(best){
+    best.focus();
+    if(best.parentNode === $("tabs")){ const t = $("tabs"); const L = best.offsetLeft - t.offsetLeft; if(L < t.scrollLeft + 20) t.scrollLeft = L - 40; else if(L + best.offsetWidth > t.scrollLeft + t.clientWidth - 20) t.scrollLeft = L + best.offsetWidth - t.clientWidth + 40; }
+    else if(best.scrollIntoView) best.scrollIntoView(false);
+  }
 });
 
 function tick(){ $("clock").textContent = hhmm(new Date()); }
