@@ -54,6 +54,9 @@ public class MainActivity extends Activity {
                     HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
                     c.setConnectTimeout(15000);
                     c.setReadTimeout(20000);
+                    c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10; TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36");
+                    c.setRequestProperty("Accept", "application/json, text/plain, */*");
+                    c.setRequestProperty("Referer", "https://www.sofascore.com/");
                     int code = c.getResponseCode();
                     InputStream in = code < 400 ? c.getInputStream() : c.getErrorStream();
                     StringBuilder sb = new StringBuilder();
